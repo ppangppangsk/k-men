@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Image, Film, FileDown, Download, ExternalLink } from 'lucide-react';
+import { Image, Film, FileDown, Download, FileText, ArrowRight } from 'lucide-react';
 import SectionTitle from '../components/ui/SectionTitle';
 import RainbowDivider from '../components/ui/RainbowDivider';
 import { api } from '../lib/api';
@@ -20,23 +21,6 @@ const categoryIcons: Record<string, typeof Image> = {
   video: Film,
   document: FileDown,
 };
-
-const staticResources = [
-  {
-    title: 'K-MEN 소개 브로셔',
-    description: '한국맨엔게이지네트워크 소개 자료입니다.',
-    url: '/assets/brochure.png',
-    type: 'image' as const,
-    category: 'document' as const,
-  },
-  {
-    title: 'K-MEN 출범 보도자료',
-    description: '한국맨엔게이지네트워크 출범 선포 보도 요청 자료입니다.',
-    url: '/assets/press-release.pdf',
-    type: 'pdf' as const,
-    category: 'document' as const,
-  },
-];
 
 export default function Resources() {
   const [media, setMedia] = useState<Media[]>([]);
@@ -74,33 +58,27 @@ export default function Resources() {
             center
           />
 
-          {/* Static Resources */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            {staticResources.map((res) => (
-              <a
-                key={res.url}
-                href={res.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-start gap-4 p-6 bg-white rounded-2xl border border-slate-200 hover:border-violet-300 hover:shadow-lg transition-all"
-              >
-                <div className="shrink-0 w-16 h-16 bg-violet-50 rounded-xl flex items-center justify-center">
-                  {res.type === 'image' ? (
-                    <Image className="w-7 h-7 text-violet-600" />
-                  ) : (
-                    <FileDown className="w-7 h-7 text-violet-600" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 group-hover:text-violet-600 transition-colors">
-                    {res.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-1">{res.description}</p>
-                </div>
-                <ExternalLink className="w-5 h-5 text-slate-400 group-hover:text-violet-500 shrink-0 mt-1 transition-colors" />
-              </a>
-            ))}
-          </div>
+          {/* Press Release */}
+          <Link
+            to="/press-release"
+            className="group flex items-start gap-4 p-6 bg-white rounded-2xl border border-slate-200 hover:border-violet-300 hover:shadow-lg transition-all mb-12"
+          >
+            <div className="shrink-0 w-16 h-16 bg-violet-50 rounded-xl flex items-center justify-center">
+              <FileText className="w-7 h-7 text-violet-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="inline-block px-2 py-0.5 bg-violet-100 text-violet-700 rounded text-xs font-medium mb-1.5">
+                보도자료
+              </span>
+              <h3 className="font-bold text-slate-900 group-hover:text-violet-600 transition-colors">
+                K-MEN, 성평등주간에 함께하는 '소년과 남성의 날' 선포
+              </h3>
+              <p className="text-sm text-slate-500 mt-1">
+                2025년 9월 5일 · 성평등 사회를 향한 소년과 남성의 새로운 동행
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-violet-500 shrink-0 mt-1 transition-colors" />
+          </Link>
 
           <RainbowDivider />
 

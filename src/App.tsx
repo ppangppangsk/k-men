@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardNewPost from './pages/DashboardNewPost';
 import Admin from './pages/Admin';
 import Resources from './pages/Resources';
+import PressRelease from './pages/PressRelease';
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/new" element={<DashboardNewPost />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/press-release" element={<PressRelease />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
         </Routes>
