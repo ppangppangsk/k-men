@@ -52,6 +52,22 @@ export async function initDB() {
       )
     `);
 
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS media (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        filename VARCHAR(500) NOT NULL,
+        original_name VARCHAR(500) NOT NULL,
+        mime_type VARCHAR(100) NOT NULL,
+        size INT NOT NULL,
+        category ENUM('photo', 'video', 'document') NOT NULL DEFAULT 'photo',
+        title VARCHAR(500) NULL,
+        description TEXT NULL,
+        uploaded_by INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (uploaded_by) REFERENCES organizations(id)
+      )
+    `);
+
     // 관리자 시드: ADMIN_EMAIL + ADMIN_PASSWORD 환경변수가 있으면 자동 생성
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;

@@ -7,6 +7,7 @@ import { initDB } from './db';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 import adminRoutes from './routes/admin';
+import uploadRoutes from './routes/upload';
 
 dotenv.config();
 
@@ -23,6 +24,11 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/media', uploadRoutes);
+
+// Serve uploaded files
+const uploadsPath = path.join(__dirname, '..', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Production: serve static files
 const distPath = path.join(__dirname, '..', 'dist');

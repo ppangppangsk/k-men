@@ -40,6 +40,19 @@ export interface Member {
   url?: string;
 }
 
+export interface Media {
+  id: number;
+  filename: string;
+  original_name: string;
+  mime_type: string;
+  size: number;
+  category: 'photo' | 'video' | 'document';
+  title: string;
+  description?: string;
+  url: string;
+  created_at: string;
+}
+
 export interface NavItem {
   label: string;
   path: string;

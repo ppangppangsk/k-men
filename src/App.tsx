@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DashboardNewPost from './pages/DashboardNewPost';
 import Admin from './pages/Admin';
+import Resources from './pages/Resources';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/new" element={<DashboardNewPost />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
         </Routes>

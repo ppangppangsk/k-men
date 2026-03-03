@@ -1,4 +1,4 @@
-import type { Post, LoginResponse, Organization } from '../types';
+import type { Post, LoginResponse, Organization, Media } from '../types';
 
 const BASE = '/api';
 
@@ -97,6 +97,40 @@ export const api = {
 
     deletePost(id: number) {
       return request<{ message: string }>(`/admin/posts/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+
+  // Media
+  media: {
+    getAll(category?: 'photo' | 'video' | 'document') {
+      const query = category ? `?category=${category}` : '';
+      return request<Media[]>(`/media${query}`);
+    },
+
+    async upload(file: File, data: { title?: string; description?: string; category: string }) {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', data.category);
+      if (data.title) formData.append('title', data.title);
+      if (data.description) formData.append('description', data.description);
+
+      const res = await fetch(`${BASE}/media`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+
+    delete(id: number) {
+      return request<{ message: string }>(`/media/${id}`, {
         method: 'DELETE',
       });
     },
