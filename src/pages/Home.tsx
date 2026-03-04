@@ -11,8 +11,8 @@ export default function Home() {
     <>
       <Hero />
       <VisionMissionValues />
-      <AllianceSection />
       <WorkAreas />
+      <AllianceSection />
       <MembersGrid />
 
       {/* CTA Section — matching kmen.html contact style */}
