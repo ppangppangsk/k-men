@@ -28,7 +28,7 @@ export default function NewsDetail() {
     return (
       <div className="pt-44 pb-24 text-center">
         <p className="text-slate-400 text-lg mb-4">소식을 찾을 수 없습니다.</p>
-        <Link to="/news" className="text-violet-600 hover:underline">목록으로 돌아가기</Link>
+        <Link to="/news" className="text-kmen-orange hover:underline">목록으로 돌아가기</Link>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function NewsDetail() {
   return (
     <section className="pt-32 pb-24 md:pt-44 md:pb-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[800px] mx-auto">
-        <Link to="/news" className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 mb-8 transition-colors">
+        <Link to="/news" className="inline-flex items-center gap-2 text-kmen-orange hover:text-[#D47A28] mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           소식 목록
         </Link>
@@ -72,7 +72,7 @@ export default function NewsDetail() {
           )}
 
           <div
-            className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-violet-600"
+            className="prose prose-slate max-w-none prose-headings:font-bold"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </motion.article>

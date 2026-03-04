@@ -11,7 +11,8 @@ export interface Post {
   id: number;
   title: string;
   content: string;
-  type: 'news' | 'event';
+  type: 'news' | 'event' | 'press_release' | 'notice' | 'document' | 'member_activity';
+  summary?: string;
   org_id: number;
   org_name?: string;
   event_date?: string;
@@ -50,6 +51,27 @@ export interface Media {
   title: string;
   description?: string;
   url: string;
+  created_at: string;
+}
+
+export interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QnA {
+  id: number;
+  author_name: string;
+  author_email?: string;
+  title: string;
+  content: string | null;
+  is_private: boolean;
+  answer: string | null;
+  answered_at: string | null;
   created_at: string;
 }
 

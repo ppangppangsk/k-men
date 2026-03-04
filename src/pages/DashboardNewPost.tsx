@@ -1,8 +1,9 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 import Button from '../components/ui/Button';
+import RichTextEditor from '../components/ui/RichTextEditor';
 import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 import type { Post } from '../types';
@@ -15,11 +16,12 @@ export default function DashboardNewPost() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [type, setType] = useState<'news' | 'event'>('news');
+  const [type, setType] = useState<'news' | 'event' | 'member_activity'>('news');
   const [eventDate, setEventDate] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [contentReady, setContentReady] = useState(!editId);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -31,9 +33,10 @@ export default function DashboardNewPost() {
       api.getPost(Number(editId)).then((post) => {
         setTitle(post.title);
         setContent(post.content);
-        setType(post.type);
+        setType(post.type as 'news' | 'event' | 'member_activity');
         setEventDate(post.event_date || '');
         setImageUrl(post.image_url || '');
+        setContentReady(true);
       }).catch(() => {
         navigate('/dashboard');
       });
@@ -79,7 +82,7 @@ export default function DashboardNewPost() {
         >
           <button
             onClick={() => navigate('/dashboard')}
-            className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-kmen-orange hover:text-[#D47A28] mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             대시보드로 돌아가기
@@ -102,7 +105,7 @@ export default function DashboardNewPost() {
                   onClick={() => setType('news')}
                   className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
                     type === 'news'
-                      ? 'bg-violet-600 text-white'
+                      ? 'bg-kmen-orange text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -113,11 +116,22 @@ export default function DashboardNewPost() {
                   onClick={() => setType('event')}
                   className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
                     type === 'event'
-                      ? 'bg-violet-600 text-white'
+                      ? 'bg-kmen-orange text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
                   행사
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setType('member_activity')}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                    type === 'member_activity'
+                      ? 'bg-kmen-orange text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  회원사 활동
                 </button>
               </div>
             </div>
@@ -129,7 +143,7 @@ export default function DashboardNewPost() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 placeholder="제목을 입력하세요"
               />
             </div>
@@ -141,7 +155,7 @@ export default function DashboardNewPost() {
                   type="date"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 />
               </div>
             )}
@@ -152,21 +166,20 @@ export default function DashboardNewPost() {
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 placeholder="https://example.com/image.jpg"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">내용</label>
-              <textarea
-                required
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={12}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none resize-y"
-                placeholder="내용을 입력하세요 (HTML 태그 사용 가능)"
-              />
+              {contentReady && (
+                <RichTextEditor
+                  content={content}
+                  onChange={setContent}
+                  placeholder="내용을 입력하세요..."
+                />
+              )}
             </div>
 
             <div className="flex gap-3">

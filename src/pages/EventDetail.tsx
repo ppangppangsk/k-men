@@ -28,7 +28,7 @@ export default function EventDetail() {
     return (
       <div className="pt-44 pb-24 text-center">
         <p className="text-slate-400 text-lg mb-4">행사를 찾을 수 없습니다.</p>
-        <Link to="/events" className="text-violet-600 hover:underline">목록으로 돌아가기</Link>
+        <Link to="/events" className="text-kmen-orange hover:underline">목록으로 돌아가기</Link>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function EventDetail() {
   return (
     <section className="pt-32 pb-24 md:pt-44 md:pb-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[800px] mx-auto">
-        <Link to="/events" className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 mb-8 transition-colors">
+        <Link to="/events" className="inline-flex items-center gap-2 text-kmen-orange hover:text-[#D47A28] mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           행사 목록
         </Link>
@@ -52,7 +52,7 @@ export default function EventDetail() {
 
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8 pb-8 border-b border-slate-200">
             {post.event_date && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-violet-100 text-violet-600 rounded-full font-medium">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-kmen-orange/10 text-kmen-orange rounded-full font-medium">
                 <Calendar className="w-4 h-4" />
                 {new Date(post.event_date).toLocaleDateString('ko-KR', {
                   year: 'numeric',
@@ -78,7 +78,7 @@ export default function EventDetail() {
           )}
 
           <div
-            className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-violet-600"
+            className="prose prose-slate max-w-none prose-headings:font-bold"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </motion.article>

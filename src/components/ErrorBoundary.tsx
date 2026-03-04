@@ -28,9 +28,9 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="min-h-screen flex items-center justify-center bg-kmen-cream px-4">
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-2xl">!</span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 mb-3">문제가 발생했습니다</h1>
@@ -39,7 +39,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-violet-600 text-white rounded-full font-semibold hover:bg-violet-700 transition-colors"
+              className="px-6 py-3 bg-kmen-orange text-white rounded-full font-semibold hover:bg-[#D47A28] transition-colors"
             >
               새로고침
             </button>

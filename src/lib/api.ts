@@ -1,4 +1,4 @@
-import type { Post, LoginResponse, Organization, Media } from '../types';
+import type { Post, LoginResponse, Organization, Media, FAQ, QnA } from '../types';
 
 const BASE = '/api';
 
@@ -34,7 +34,7 @@ export const api = {
   },
 
   // Posts
-  getPosts(type?: 'news' | 'event') {
+  getPosts(type?: Post['type']) {
     const query = type ? `?type=${type}` : '';
     return request<Post[]>(`/posts${query}`);
   },
@@ -43,14 +43,14 @@ export const api = {
     return request<Post>(`/posts/${id}`);
   },
 
-  createPost(data: Pick<Post, 'title' | 'content' | 'type' | 'event_date' | 'image_url'>) {
+  createPost(data: Pick<Post, 'title' | 'content' | 'type' | 'event_date' | 'image_url'> & { summary?: string }) {
     return request<Post>('/posts', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
 
-  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'event_date' | 'image_url'>>) {
+  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'event_date' | 'image_url'>> & { summary?: string }) {
     return request<Post>(`/posts/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -129,9 +129,80 @@ export const api = {
       return res.json();
     },
 
+    update(id: number, data: { title?: string; description?: string }) {
+      return request<Media>(`/media/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      });
+    },
+
     delete(id: number) {
       return request<{ message: string }>(`/media/${id}`, {
         method: 'DELETE',
+      });
+    },
+  },
+
+  // FAQ
+  faq: {
+    getAll() {
+      return request<FAQ[]>('/faq');
+    },
+    create(data: { question: string; answer: string; sort_order?: number }) {
+      return request<FAQ>('/faq', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update(id: number, data: { question: string; answer: string; sort_order?: number }) {
+      return request<FAQ>(`/faq/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    delete(id: number) {
+      return request<{ message: string }>(`/faq/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+
+  // Q&A
+  qna: {
+    getAll() {
+      return request<QnA[]>('/qna');
+    },
+    getOne(id: number) {
+      return request<QnA>(`/qna/${id}`);
+    },
+    verify(id: number, password: string) {
+      return request<QnA>(`/qna/${id}/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+      });
+    },
+    create(data: { author_name: string; author_email?: string; title: string; content: string; password: string; is_private: boolean }) {
+      return request<QnA>('/qna', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update(id: number, data: { title: string; content: string; password: string }) {
+      return request<{ message: string }>(`/qna/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    delete(id: number, password?: string) {
+      return request<{ message: string }>(`/qna/${id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ password }),
+      });
+    },
+    answer(id: number, answer: string) {
+      return request<{ message: string }>(`/qna/${id}/answer`, {
+        method: 'PATCH',
+        body: JSON.stringify({ answer }),
       });
     },
   },

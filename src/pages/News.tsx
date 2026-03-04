@@ -47,7 +47,7 @@ export default function News() {
                 transition={{ delay: idx * 0.05 }}
               >
                 <Link to={`/news/${post.id}`}>
-                  <Card className="p-6 h-full" hover>
+                  <Card className="p-6 h-full" hover gradientBar>
                     {post.image_url && (
                       <img
                         src={post.image_url}

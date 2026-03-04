@@ -1,72 +1,65 @@
 import { motion } from 'motion/react';
-import { Globe, Users, MessageCircle } from 'lucide-react';
+import SectionTitle from '../ui/SectionTitle';
 import { siteContent } from '../../data/siteContent';
 
 export default function VisionMissionValues() {
   const { vision, mission, values } = siteContent;
 
   return (
-    <section className="py-24 bg-violet-50/50">
+    <section className="py-24 bg-white">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionTitle
+          tag="About K-MEN"
+          title="비전 · 미션 · 가치"
+          subtitle="K-MEN은 성평등을 위해 남성과 소년이 적극적인 변화의 주체가 되는 세상을 만들어갑니다."
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Vision */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-violet-600 text-white p-10 rounded-[2rem] shadow-lg flex flex-col justify-center"
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+            style={{ background: 'linear-gradient(135deg, #C8E6C9, #DCEDC8)' }}
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <span className="p-2 bg-white/20 rounded-xl">
-                <Globe className="w-6 h-6" />
-              </span>
-              {vision.title}
-            </h3>
-            <p className="text-xl leading-relaxed font-semibold break-keep">{vision.content}</p>
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: '#2BA84A' }} />
+            <div className="w-12 h-12 rounded-[14px] bg-kmen-green text-white flex items-center justify-center text-[22px] mb-5">🔭</div>
+            <h3 className="text-xl font-extrabold text-slate-900 mb-3.5 tracking-tight">{vision.title}</h3>
+            <p className="text-[15px] leading-[1.8] text-slate-500">{vision.content}</p>
           </motion.div>
 
+          {/* Mission */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-rose-500 text-white p-10 rounded-[2rem] shadow-lg flex flex-col justify-center"
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+            style={{ background: 'linear-gradient(135deg, #FFE0B2, #FFF3E0)' }}
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <span className="p-2 bg-white/20 rounded-xl">
-                <Users className="w-6 h-6" />
-              </span>
-              {mission.title}
-            </h3>
-            <ul className="space-y-4 text-lg font-semibold break-keep">
-              {mission.items.map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="mt-2 w-1.5 h-1.5 rounded-full bg-white shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: '#E8882F' }} />
+            <div className="w-12 h-12 rounded-[14px] bg-kmen-orange text-white flex items-center justify-center text-[22px] mb-5">🚀</div>
+            <h3 className="text-xl font-extrabold text-slate-900 mb-3.5 tracking-tight">{mission.title}</h3>
+            <p className="text-[15px] leading-[1.8] text-slate-500">
+              {mission.items.join(', ')}
+            </p>
           </motion.div>
 
+          {/* Values */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-amber-500 text-white p-10 rounded-[2rem] shadow-lg md:col-span-3 lg:col-span-1 flex flex-col justify-center"
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1 md:col-span-3 lg:col-span-1"
+            style={{ background: 'linear-gradient(135deg, #FFE0B2, #C8E6C9)' }}
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <span className="p-2 bg-white/20 rounded-xl">
-                <MessageCircle className="w-6 h-6" />
-              </span>
-              {values.title}
-            </h3>
-            <p className="text-lg leading-relaxed font-semibold break-keep">
-              {values.content}
-              <br />
-              <strong className="font-extrabold text-xl mt-2 block">
-                {values.items.join(' · ')}
-              </strong>
-              의 가치를 실천합니다.
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: 'linear-gradient(to bottom, #E8882F, #2BA84A)' }} />
+            <div className="w-12 h-12 rounded-[14px] text-white flex items-center justify-center text-[22px] mb-5" style={{ background: 'linear-gradient(135deg, #E8882F, #2BA84A)' }}>💎</div>
+            <h3 className="text-xl font-extrabold text-slate-900 mb-3.5 tracking-tight">{values.title}</h3>
+            <p className="text-[15px] leading-[1.8] text-slate-500">
+              {values.content} {values.items.join(' · ')}의 가치를 실천합니다.
             </p>
           </motion.div>
         </div>

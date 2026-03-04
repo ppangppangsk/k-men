@@ -113,6 +113,36 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 관리자: 미디어 수정 (제목, 설명)
+router.patch('/:id', authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
+  const { title, description } = req.body;
+  try {
+    const [existing] = await pool.execute<RowDataPacket[]>(
+      'SELECT id FROM media WHERE id = ?',
+      [req.params.id]
+    );
+    if (existing.length === 0) {
+      res.status(404).json({ error: '파일을 찾을 수 없습니다.' });
+      return;
+    }
+
+    await pool.execute(
+      'UPDATE media SET title = COALESCE(?, title), description = COALESCE(?, description) WHERE id = ?',
+      [title || null, description || null, req.params.id]
+    );
+
+    const [rows] = await pool.execute<RowDataPacket[]>(
+      'SELECT id, filename, original_name, mime_type, size, category, title, description, created_at FROM media WHERE id = ?',
+      [req.params.id]
+    );
+    const row = rows[0];
+    res.json({ ...row, url: `/uploads/${row.filename}` });
+  } catch (err) {
+    console.error('Update media error:', err);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  }
+});
+
 // 관리자: 미디어 삭제
 router.delete('/:id', authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
   try {

@@ -2,10 +2,27 @@
 
 @theme {
   --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Outfit", "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --color-kmen-orange: #E8882F;
+  --color-kmen-orange-light: #F5A623;
+  --color-kmen-green: #2BA84A;
+  --color-kmen-green-dark: #1E8E3E;
+  --color-kmen-green-light: #34C759;
+  --color-kmen-cream: #FFF8F0;
+}
+
+:root {
+  --kmen-orange: #E8882F;
+  --kmen-orange-light: #F5A623;
+  --kmen-green: #2BA84A;
+  --kmen-green-dark: #1E8E3E;
+  --kmen-green-light: #34C759;
+  --kmen-cream: #FFF8F0;
 }
 
 body {
   font-family: var(--font-sans);
+  background: var(--kmen-cream);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -36,6 +53,63 @@ button:disabled {
   overflow: hidden;
 }
 
+/* Gradient text utilities */
+.gradient-text-warm {
+  background: linear-gradient(135deg, #E8882F, #D47A28);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-cool {
+  background: linear-gradient(135deg, #2BA84A, #1E8E3E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-energy {
+  background: linear-gradient(135deg, #F5A623, #34C759);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Blob floating animation */
+@keyframes blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* Card floating animation */
+@keyframes card-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Card gradient bar */
+.card-gradient-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-gradient-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #E8882F, #2BA84A);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.card-gradient-bar:hover::after {
+  transform: scaleX(1);
+}
+
 /* Prose for article content */
 .prose h1 { font-size: 2rem; margin: 1.5rem 0 1rem; }
 .prose h2 { font-size: 1.5rem; margin: 1.25rem 0 0.75rem; }
@@ -43,5 +117,5 @@ button:disabled {
 .prose p { margin: 0.75rem 0; line-height: 1.8; }
 .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; }
 .prose li { margin: 0.25rem 0; }
-.prose a { text-decoration: underline; }
+.prose a { text-decoration: underline; color: #E8882F; }
 .prose img { border-radius: 1rem; margin: 1.5rem 0; }

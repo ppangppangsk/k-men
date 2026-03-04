@@ -47,10 +47,10 @@ export default function Events() {
                 transition={{ delay: idx * 0.05 }}
               >
                 <Link to={`/events/${post.id}`}>
-                  <Card className="p-6 h-full" hover>
+                  <Card className="p-6 h-full" hover gradientBar>
                     <div className="flex gap-5">
                       {post.event_date && (
-                        <div className="shrink-0 w-16 h-16 bg-violet-100 text-violet-600 rounded-2xl flex flex-col items-center justify-center">
+                        <div className="shrink-0 w-16 h-16 bg-kmen-orange/10 text-kmen-orange rounded-2xl flex flex-col items-center justify-center">
                           <span className="text-xs font-medium">
                             {new Date(post.event_date).toLocaleDateString('ko-KR', { month: 'short' })}
                           </span>

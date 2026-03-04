@@ -89,10 +89,12 @@ export default function Dashboard() {
                           className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             post.type === 'news'
                               ? 'bg-sky-100 text-sky-700'
-                              : 'bg-amber-100 text-amber-700'
+                              : post.type === 'member_activity'
+                                ? 'bg-teal-100 text-teal-700'
+                                : 'bg-amber-100 text-amber-700'
                           }`}
                         >
-                          {post.type === 'news' ? '소식' : '행사'}
+                          {post.type === 'news' ? '소식' : post.type === 'member_activity' ? '회원사 활동' : '행사'}
                         </span>
                         <span className="text-xs text-slate-400">
                           {new Date(post.created_at).toLocaleDateString('ko-KR')}
@@ -103,7 +105,7 @@ export default function Dashboard() {
                     <div className="flex gap-2 shrink-0">
                       <Link
                         to={`/dashboard/new?edit=${post.id}`}
-                        className="p-2 text-slate-400 hover:text-violet-600 transition-colors"
+                        className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </Link>

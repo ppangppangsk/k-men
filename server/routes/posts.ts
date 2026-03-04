@@ -17,7 +17,8 @@ router.get('/', async (req: Request, res: Response) => {
     `;
     const params: string[] = [];
 
-    if (type === 'news' || type === 'event') {
+    const validTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
+    if (typeof type === 'string' && validTypes.includes(type)) {
       query += ' AND p.type = ?';
       params.push(type);
     }
@@ -71,22 +72,29 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // 게시글 작성 (인증 필요)
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { title, content, type, event_date, image_url } = req.body;
+  const { title, content, type, event_date, image_url, summary } = req.body;
 
   if (!title || !content || !type) {
     res.status(400).json({ error: '제목, 내용, 유형을 모두 입력해주세요.' });
     return;
   }
 
-  if (type !== 'news' && type !== 'event') {
-    res.status(400).json({ error: '유형은 news 또는 event만 가능합니다.' });
+  const validTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
+  if (!validTypes.includes(type)) {
+    res.status(400).json({ error: `유형은 ${validTypes.join(', ')}만 가능합니다.` });
+    return;
+  }
+
+  // notice, document 타입은 관리자 전용
+  if ((type === 'notice' || type === 'document') && req.orgRole !== 'admin') {
+    res.status(403).json({ error: '관리자만 작성할 수 있는 유형입니다.' });
     return;
   }
 
   try {
     const [result] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO posts (title, content, type, org_id, event_date, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-      [title, content, type, req.orgId, event_date || null, image_url || null]
+      'INSERT INTO posts (title, content, summary, type, org_id, event_date, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [title, content, summary || null, type, req.orgId, event_date || null, image_url || null]
     );
 
     const [rows] = await pool.execute<RowDataPacket[]>(
@@ -101,9 +109,9 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// 게시글 수정 (본인 글만)
+// 게시글 수정 (본인 글만, admin은 모두 수정 가능)
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { title, content, event_date, image_url } = req.body;
+  const { title, content, event_date, image_url, summary } = req.body;
 
   try {
     const [existing] = await pool.execute<RowDataPacket[]>(
@@ -116,14 +124,14 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    if (existing[0].org_id !== req.orgId) {
+    if (existing[0].org_id !== req.orgId && req.orgRole !== 'admin') {
       res.status(403).json({ error: '본인의 글만 수정할 수 있습니다.' });
       return;
     }
 
     await pool.execute(
-      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), event_date = ?, image_url = ? WHERE id = ?',
-      [title, content, event_date || null, image_url || null, req.params.id]
+      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ? WHERE id = ?',
+      [title, content, summary !== undefined ? summary : null, event_date || null, image_url || null, req.params.id]
     );
 
     const [rows] = await pool.execute<RowDataPacket[]>(

@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white font-black text-sm tracking-tighter">
+              <div className="w-10 h-10 bg-kmen-orange rounded-xl flex items-center justify-center text-white font-black text-sm tracking-tighter">
                 KM
               </div>
               <span className="font-bold text-xl tracking-tight text-white">K-MEN</span>
@@ -24,11 +24,11 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">바로가기</h4>
             <div className="flex flex-col gap-2 text-sm">
-              <Link to="/about" className="hover:text-violet-400 transition-colors">소개</Link>
-              <Link to="/activities" className="hover:text-violet-400 transition-colors">활동</Link>
-              <Link to="/news" className="hover:text-violet-400 transition-colors">소식</Link>
-              <Link to="/events" className="hover:text-violet-400 transition-colors">행사</Link>
-              <Link to="/join" className="hover:text-violet-400 transition-colors">함께하기</Link>
+              <Link to="/about" className="hover:text-kmen-orange-light transition-colors">소개</Link>
+              <Link to="/activities" className="hover:text-kmen-orange-light transition-colors">활동</Link>
+              <Link to="/news" className="hover:text-kmen-orange-light transition-colors">소식</Link>
+              <Link to="/events" className="hover:text-kmen-orange-light transition-colors">행사</Link>
+              <Link to="/join" className="hover:text-kmen-orange-light transition-colors">함께하기</Link>
             </div>
           </div>
 
@@ -37,7 +37,7 @@ export default function Footer() {
             <div className="flex flex-col gap-2 text-sm">
               <a
                 href="mailto:koreamenengagenetwork@gmail.com"
-                className="hover:text-violet-400 transition-colors break-all"
+                className="hover:text-kmen-orange-light transition-colors break-all"
               >
                 koreamenengagenetwork@gmail.com
               </a>
@@ -45,7 +45,7 @@ export default function Footer() {
                 href="https://menengage.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-violet-400 transition-colors"
+                className="hover:text-kmen-orange-light transition-colors"
               >
                 MenEngage Alliance
               </a>

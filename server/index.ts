@@ -8,6 +8,8 @@ import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 import adminRoutes from './routes/admin';
 import uploadRoutes from './routes/upload';
+import faqRoutes from './routes/faq';
+import qnaRoutes from './routes/qna';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/media', uploadRoutes);
+app.use('/api/faq', faqRoutes);
+app.use('/api/qna', qnaRoutes);
 
 // Serve uploaded files
 const uploadsPath = path.join(__dirname, '..', 'uploads');

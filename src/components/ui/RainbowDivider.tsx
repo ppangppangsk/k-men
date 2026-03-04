@@ -5,7 +5,8 @@ interface Props {
 export default function RainbowDivider({ className = '' }: Props) {
   return (
     <div
-      className={`h-[2px] w-full bg-gradient-to-r from-violet-500 via-pink-500 via-amber-400 to-teal-400 ${className}`}
+      className={`h-[3px] w-full ${className}`}
+      style={{ background: 'linear-gradient(to right, #E8882F, #F5A623, #34C759, #2BA84A)' }}
       role="separator"
     />
   );

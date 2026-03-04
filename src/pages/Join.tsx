@@ -5,6 +5,12 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { siteContent } from '../data/siteContent';
 
+const stepColors = [
+  { bg: 'bg-kmen-green/10', text: 'text-kmen-green', border: 'border-kmen-green/20' },
+  { bg: 'bg-kmen-orange/10', text: 'text-kmen-orange', border: 'border-kmen-orange/20' },
+  { bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' },
+];
+
 export default function Join() {
   const { join } = siteContent;
 
@@ -29,32 +35,35 @@ export default function Join() {
       <section className="pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            {join.steps.map((step, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Card className="p-8 h-full" hover>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-full flex items-center justify-center font-bold text-lg">
-                      {idx + 1}
+            {join.steps.map((step, idx) => {
+              const colors = stepColors[idx] || stepColors[0];
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="p-8 h-full" hover gradientBar>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-10 h-10 ${colors.bg} ${colors.text} rounded-full flex items-center justify-center font-bold text-lg border ${colors.border}`}>
+                        {idx + 1}
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
-                </Card>
-              </motion.div>
-            ))}
+                    <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-violet-50 rounded-[2rem] p-10 md:p-14"
+            className="bg-kmen-cream rounded-[2rem] p-10 md:p-14"
           >
             <h3 className="text-2xl font-bold text-slate-900 mb-6">회원 단체가 되면</h3>
             <ul className="space-y-4 mb-8">
@@ -65,12 +74,12 @@ export default function Join() {
                 '소식 및 행사 정보 게시 권한',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-slate-700">
-                  <CheckCircle className="w-5 h-5 text-violet-500 mt-0.5 shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-kmen-green mt-0.5 shrink-0" />
                   <span className="break-keep">{item}</span>
                 </li>
               ))}
             </ul>
-            <Button to="/contact" size="lg">
+            <Button to="/contact" variant="primary" size="lg">
               문의하기
               <ArrowRight className="w-5 h-5" />
             </Button>

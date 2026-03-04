@@ -11,7 +11,7 @@ export default function Layout() {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-violet-200 selection:text-violet-900">
+    <div className="min-h-screen bg-kmen-cream text-slate-900 selection:bg-orange-200 selection:text-orange-900">
       <Header />
       <main>
         <Outlet />

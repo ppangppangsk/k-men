@@ -75,7 +75,7 @@ export default function Login() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                   placeholder="단체명을 입력하세요"
                 />
               </div>
@@ -88,7 +88,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 placeholder="이메일을 입력하세요"
               />
             </div>
@@ -100,7 +100,7 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors outline-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 placeholder="비밀번호를 입력하세요"
                 minLength={6}
               />
@@ -121,7 +121,7 @@ export default function Login() {
                 setError('');
                 setSuccess('');
               }}
-              className="text-violet-600 hover:text-violet-700 text-sm font-medium transition-colors"
+              className="text-kmen-orange hover:text-[#D47A28] text-sm font-medium transition-colors"
             >
               {isRegister ? '이미 계정이 있으신가요? 로그인' : '회원가입하기'}
             </button>

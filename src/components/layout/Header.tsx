@@ -31,13 +31,13 @@ export default function Header() {
       <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled || mobileOpen
-            ? 'bg-white/90 backdrop-blur-md shadow-sm py-4'
+            ? 'bg-kmen-cream/92 backdrop-blur-xl shadow-[0_2px_24px_rgba(0,0,0,0.08)] py-4'
             : 'bg-transparent py-6'
         }`}
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white font-black text-xl tracking-tighter shadow-sm">
+            <div className="w-10 h-10 bg-kmen-orange rounded-xl flex items-center justify-center text-white font-black text-xl tracking-tighter shadow-sm">
               KM
             </div>
             <span className="font-bold text-xl tracking-tight text-slate-900">K-MEN</span>
@@ -48,8 +48,8 @@ export default function Header() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`hover:text-violet-600 transition-colors duration-300 ${
-                  location.pathname === item.path ? 'text-violet-600 font-semibold' : ''
+                className={`hover:text-kmen-orange transition-colors duration-300 ${
+                  location.pathname === item.path ? 'text-kmen-orange font-semibold' : ''
                 }`}
               >
                 {item.label}
@@ -57,7 +57,7 @@ export default function Header() {
             ))}
             <Link
               to={authLink.to}
-              className="flex items-center gap-1.5 px-5 py-2.5 bg-violet-600 text-white rounded-full hover:bg-violet-700 transition-colors duration-300 shadow-sm"
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-kmen-green text-white rounded-full hover:bg-kmen-green-dark transition-colors duration-300 shadow-sm"
             >
               {isAdmin && <Shield className="w-3.5 h-3.5" />}
               {authLink.label}
@@ -75,20 +75,20 @@ export default function Header() {
       </nav>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-white pt-24 px-6 md:hidden">
+        <div className="fixed inset-0 z-40 bg-kmen-cream/97 backdrop-blur-lg pt-24 px-6 md:hidden">
           <div className="flex flex-col gap-6 text-lg font-medium">
             {mainNav.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`transition-colors ${
-                  location.pathname === item.path ? 'text-violet-600' : 'text-slate-900'
+                  location.pathname === item.path ? 'text-kmen-orange' : 'text-slate-900'
                 }`}
               >
                 {item.label}
               </Link>
             ))}
-            <Link to={authLink.to} className="text-violet-600 font-semibold">
+            <Link to={authLink.to} className="text-kmen-green font-semibold">
               {authLink.label}
             </Link>
             {isAuthenticated && !isAdmin && (

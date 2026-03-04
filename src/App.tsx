@@ -15,7 +15,14 @@ import Dashboard from './pages/Dashboard';
 import DashboardNewPost from './pages/DashboardNewPost';
 import Admin from './pages/Admin';
 import Resources from './pages/Resources';
-import PressRelease from './pages/PressRelease';
+import PressReleases from './pages/PressReleases';
+import PressReleaseDetail from './pages/PressReleaseDetail';
+import QnAWrite from './pages/QnAWrite';
+import QnADetail from './pages/QnADetail';
+import Notice from './pages/Notice';
+import NoticeDetail from './pages/NoticeDetail';
+import DocumentDetail from './pages/DocumentDetail';
+import MemberActivityDetail from './pages/MemberActivityDetail';
 
 export default function App() {
   return (
@@ -36,7 +43,14 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/new" element={<DashboardNewPost />} />
             <Route path="/resources" element={<Resources />} />
-            <Route path="/press-release" element={<PressRelease />} />
+            <Route path="/qna/write" element={<QnAWrite />} />
+            <Route path="/qna/:id" element={<QnADetail />} />
+            <Route path="/press-release" element={<PressReleases />} />
+            <Route path="/press-release/:id" element={<PressReleaseDetail />} />
+            <Route path="/notice" element={<Notice />} />
+            <Route path="/notice/:id" element={<NoticeDetail />} />
+            <Route path="/resources/document/:id" element={<DocumentDetail />} />
+            <Route path="/activities/member/:id" element={<MemberActivityDetail />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
         </Routes>

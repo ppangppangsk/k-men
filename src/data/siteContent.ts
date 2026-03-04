@@ -27,6 +27,7 @@ export const siteContent = {
     stats: [
       { value: '92+', label: '개국 이상의 나라' },
       { value: '1,100+', label: '여개 시민사회단체 참여' },
+      { value: '13', label: 'K-MEN 참여단체' },
     ],
     description:
       '가부장제도와 권력을 종식시키고 모든 사람을 위한 젠더 정의와 사회정의를 달성하기 위해 교육과 연구, 정책 제안, 국제교류 등 활동을 이어가고 있는 국제 네트워크입니다.',
