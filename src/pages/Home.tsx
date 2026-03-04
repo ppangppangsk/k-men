@@ -1,6 +1,7 @@
 import Hero from '../components/sections/Hero';
 import VisionMissionValues from '../components/sections/VisionMissionValues';
 import AllianceSection from '../components/sections/AllianceSection';
+import WorkAreas from '../components/sections/WorkAreas';
 import MembersGrid from '../components/sections/MembersGrid';
 import Button from '../components/ui/Button';
 import { ArrowRight } from 'lucide-react';
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <VisionMissionValues />
       <AllianceSection />
+      <WorkAreas />
       <MembersGrid />
 
       {/* CTA Section — matching kmen.html contact style */}

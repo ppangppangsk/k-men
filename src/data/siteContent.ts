@@ -25,8 +25,8 @@ export const siteContent = {
   alliance: {
     title: 'MenEngage Alliance는',
     stats: [
-      { value: '92+', label: '개국 이상의 나라' },
-      { value: '1,100+', label: '여개 시민사회단체 참여' },
+      { value: '92+', label: '참여 국가' },
+      { value: '1,100+', label: '회원 시민사회단체' },
       { value: '13', label: 'K-MEN 참여단체' },
     ],
     description:
@@ -45,6 +45,20 @@ export const siteContent = {
       description:
         'MenEngage Alliance는 92개국 이상, 1,100개 이상의 시민사회단체가 참여하는 국제 네트워크입니다. 가부장제도와 불평등한 권력 구조를 변화시키고 모든 사람을 위한 젠더 정의와 사회 정의를 달성하기 위해 활동합니다.',
     },
+  },
+  workAreas: {
+    title: '활동 분야',
+    description: 'MenEngage Alliance와 함께 다양한 영역에서 성평등을 위한 활동을 펼칩니다.',
+    areas: [
+      { icon: '🤝', titleKo: '젠더 기반 폭력 예방', titleEn: 'Gender-Based Violence' },
+      { icon: '👨‍👧‍👦', titleKo: '돌봄과 아버지 역할', titleEn: 'Care and Fatherhood' },
+      { icon: '🌈', titleKo: 'LGBTQI+ 권리', titleEn: 'LGBTQI+ Rights' },
+      { icon: '✊', titleKo: '여성 인권', titleEn: 'Women\'s Rights' },
+      { icon: '🌍', titleKo: '페미니스트 평화', titleEn: 'Feminist Peace' },
+      { icon: '🌱', titleKo: '기후정의', titleEn: 'Climate Justice' },
+      { icon: '🧑‍🤝‍🧑', titleKo: '반인종차별', titleEn: 'Anti-Racism' },
+      { icon: '🧠', titleKo: '젠더 전환적 접근', titleEn: 'Gender-Transformative Approaches' },
+    ],
   },
   contact: {
     title: 'K-MEN의 활동과 가입 방법 등이 궁금하다면?',

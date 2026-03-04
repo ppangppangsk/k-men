@@ -40,7 +40,7 @@ export default function Header() {
             <div className="w-10 h-10 bg-kmen-orange rounded-xl flex items-center justify-center text-white font-black text-xl tracking-tighter shadow-sm">
               KM
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">K-MEN</span>
+            <span className="font-bold text-xl tracking-tight text-slate-900">한국맨엔게이지네트워크</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
