@@ -17,10 +17,11 @@ export default function VisionMissionValues() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Vision */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+            transition={{ duration: 0.6 }}
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-2"
             style={{ background: 'linear-gradient(135deg, #C8E6C9, #DCEDC8)' }}
           >
             <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: '#2BA84A' }} />
@@ -31,11 +32,11 @@ export default function VisionMissionValues() {
 
           {/* Mission */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-2"
             style={{ background: 'linear-gradient(135deg, #FFE0B2, #FFF3E0)' }}
           >
             <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: '#E8882F' }} />
@@ -48,11 +49,11 @@ export default function VisionMissionValues() {
 
           {/* Values */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-1 md:col-span-3 lg:col-span-1"
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="relative rounded-[20px] p-10 overflow-hidden transition-transform duration-300 hover:-translate-y-2 md:col-span-3 lg:col-span-1"
             style={{ background: 'linear-gradient(135deg, #FFE0B2, #C8E6C9)' }}
           >
             <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full" style={{ background: 'linear-gradient(to bottom, #E8882F, #2BA84A)' }} />
