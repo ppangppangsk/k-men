@@ -27,9 +27,9 @@ router.get('/', async (req: Request, res: Response) => {
 
     const [rows] = await pool.execute<RowDataPacket[]>(query, params);
     res.json(rows);
-  } catch (err) {
+  } catch (err: any) {
     console.error('Get posts error:', err);
-    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+    res.status(500).json({ error: '서버 오류가 발생했습니다.', detail: err?.message });
   }
 });
 

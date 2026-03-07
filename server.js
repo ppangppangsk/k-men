@@ -1,24 +1,22 @@
-// server/index.ts
-import express from "express";
-import cors from "cors";
-import path2 from "path";
-import { fileURLToPath } from "url";
-import dotenv2 from "dotenv";
+var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 
 // server/db.ts
+var db_exports = {};
+__export(db_exports, {
+  default: () => db_default,
+  initDB: () => initDB
+});
 import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
-dotenv.config();
-var pool = mysql.createPool({
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "kmen",
-  waitForConnections: true,
-  connectionLimit: 10
-});
 async function initDB() {
   const conn = await pool.getConnection();
   try {
@@ -235,9 +233,33 @@ async function initDB() {
     conn.release();
   }
 }
-var db_default = pool;
+var pool, db_default;
+var init_db = __esm({
+  "server/db.ts"() {
+    dotenv.config();
+    pool = mysql.createPool({
+      host: process.env.DB_HOST || "localhost",
+      port: Number(process.env.DB_PORT) || 3306,
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "kmen",
+      waitForConnections: true,
+      connectionLimit: 10
+    });
+    db_default = pool;
+  }
+});
+
+// server/index.ts
+init_db();
+import express from "express";
+import cors from "cors";
+import path2 from "path";
+import { fileURLToPath } from "url";
+import dotenv2 from "dotenv";
 
 // server/routes/auth.ts
+init_db();
 import { Router } from "express";
 import bcrypt2 from "bcryptjs";
 
@@ -342,6 +364,7 @@ router.post("/login", async (req, res) => {
 var auth_default = router;
 
 // server/routes/posts.ts
+init_db();
 import { Router as Router2 } from "express";
 var router2 = Router2();
 router2.get("/", async (req, res) => {
@@ -364,7 +387,7 @@ router2.get("/", async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error("Get posts error:", err);
-    res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4." });
+    res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4.", detail: err?.message });
   }
 });
 router2.get("/my", authMiddleware, async (req, res) => {
@@ -481,6 +504,7 @@ router2.delete("/:id", authMiddleware, async (req, res) => {
 var posts_default = router2;
 
 // server/routes/admin.ts
+init_db();
 import { Router as Router3 } from "express";
 var router3 = Router3();
 router3.use(authMiddleware, adminMiddleware);
@@ -568,6 +592,7 @@ router3.delete("/posts/:id", async (req, res) => {
 var admin_default = router3;
 
 // server/routes/upload.ts
+init_db();
 import { Router as Router4 } from "express";
 import multer from "multer";
 import path from "path";
@@ -715,6 +740,7 @@ router4.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
 var upload_default = router4;
 
 // server/routes/faq.ts
+init_db();
 import { Router as Router5 } from "express";
 var router5 = Router5();
 router5.get("/", async (_req, res) => {
@@ -781,6 +807,7 @@ router5.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
 var faq_default = router5;
 
 // server/routes/qna.ts
+init_db();
 import { Router as Router6 } from "express";
 import bcrypt3 from "bcryptjs";
 var router6 = Router6();
@@ -977,6 +1004,15 @@ var app = express();
 var PORT = Number(process.env.PORT) || 3001;
 app.use(cors());
 app.use(express.json());
+app.get("/api/health", async (_req, res) => {
+  try {
+    const pool2 = (await Promise.resolve().then(() => (init_db(), db_exports))).default;
+    const [rows] = await pool2.execute("SELECT 1 as ok");
+    res.json({ status: "ok", db: "connected", rows });
+  } catch (err) {
+    res.status(500).json({ status: "error", db: "disconnected", detail: err?.message });
+  }
+});
 app.use("/api/auth", auth_default);
 app.use("/api/posts", posts_default);
 app.use("/api/admin", admin_default);
