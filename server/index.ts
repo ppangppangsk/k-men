@@ -22,17 +22,6 @@ const PORT = Number(process.env.PORT) || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Health check — DB 연결 상태 확인용
-app.get('/api/health', async (_req, res) => {
-  try {
-    const pool = (await import('./db')).default;
-    const [rows] = await pool.execute('SELECT 1 as ok');
-    res.json({ status: 'ok', db: 'connected', rows });
-  } catch (err: any) {
-    res.status(500).json({ status: 'error', db: 'disconnected', detail: err?.message });
-  }
-});
-
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
