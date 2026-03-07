@@ -31,11 +31,10 @@ app.use('/api/faq', faqRoutes);
 app.use('/api/qna', qnaRoutes);
 
 // Serve uploaded files
-const uploadsPath = path.join(__dirname, '..', 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Production: serve static files
-const distPath = path.join(__dirname, '..', 'dist');
+const distPath = path.join(process.cwd(), 'dist');
 app.use(express.static(distPath));
 
 // SPA fallback — only for non-API routes
@@ -44,14 +43,13 @@ app.get(/^\/(?!api).*/, (_req, res) => {
 });
 
 async function start() {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
   try {
     await initDB();
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
   } catch (err) {
-    console.error('Failed to start server:', err);
-    process.exit(1);
+    console.error('Failed to initialize database:', err);
   }
 }
 

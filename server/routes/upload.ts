@@ -2,14 +2,11 @@ import { Router, type Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadDir = path.join(__dirname, '..', '..', 'uploads');
+const uploadDir = path.join(process.cwd(), 'uploads');
 
 // uploads 디렉토리 보장
 if (!fs.existsSync(uploadDir)) {

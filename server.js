@@ -2,7 +2,7 @@
 import express from "express";
 import cors from "cors";
 import path2 from "path";
-import { fileURLToPath as fileURLToPath2 } from "url";
+import { fileURLToPath } from "url";
 import dotenv2 from "dotenv";
 
 // server/db.ts
@@ -572,10 +572,7 @@ import { Router as Router4 } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
-var __filename = fileURLToPath(import.meta.url);
-var __dirname = path.dirname(__filename);
-var uploadDir = path.join(__dirname, "..", "..", "uploads");
+var uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -974,8 +971,8 @@ var qna_default = router6;
 
 // server/index.ts
 dotenv2.config();
-var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path2.dirname(__filename2);
+var __filename = fileURLToPath(import.meta.url);
+var __dirname = path2.dirname(__filename);
 var app = express();
 var PORT = Number(process.env.PORT) || 3001;
 app.use(cors());
@@ -986,22 +983,20 @@ app.use("/api/admin", admin_default);
 app.use("/api/media", upload_default);
 app.use("/api/faq", faq_default);
 app.use("/api/qna", qna_default);
-var uploadsPath = path2.join(__dirname2, "..", "uploads");
-app.use("/uploads", express.static(uploadsPath));
-var distPath = path2.join(__dirname2, "..", "dist");
+app.use("/uploads", express.static(path2.join(process.cwd(), "uploads")));
+var distPath = path2.join(process.cwd(), "dist");
 app.use(express.static(distPath));
 app.get(/^\/(?!api).*/, (_req, res) => {
   res.sendFile(path2.join(distPath, "index.html"));
 });
 async function start() {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
   try {
     await initDB();
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
   } catch (err) {
-    console.error("Failed to start server:", err);
-    process.exit(1);
+    console.error("Failed to initialize database:", err);
   }
 }
 start();
