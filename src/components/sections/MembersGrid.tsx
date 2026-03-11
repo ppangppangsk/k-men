@@ -20,9 +20,21 @@ export default function MembersGrid() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.05 }}
-              className="px-6 py-3.5 bg-slate-100 rounded-full text-sm font-medium text-slate-800 border border-transparent hover:bg-white hover:border-kmen-orange hover:text-kmen-orange hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(232,136,47,0.12)] transition-all duration-300 cursor-default"
             >
-              {member.name}
+              {member.url ? (
+                <a
+                  href={member.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-6 py-3.5 bg-slate-100 rounded-full text-sm font-medium text-slate-800 border border-transparent hover:bg-white hover:border-kmen-orange hover:text-kmen-orange hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(232,136,47,0.12)] transition-all duration-300 cursor-pointer"
+                >
+                  {member.name}
+                </a>
+              ) : (
+                <span className="inline-block px-6 py-3.5 bg-slate-100 rounded-full text-sm font-medium text-slate-800 border border-transparent transition-all duration-300 cursor-default">
+                  {member.name}
+                </span>
+              )}
             </motion.div>
           ))}
         </div>
