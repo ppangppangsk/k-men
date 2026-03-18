@@ -84,11 +84,10 @@ export default function PressReleases() {
                       </Link>
                     )}
 
-                    {/* Full Content */}
-                    <div
-                      className="prose prose-slate max-w-none prose-headings:font-bold prose-img:rounded-xl prose-img:mx-auto"
-                      dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
+                    {/* Preview */}
+                    <p className="text-slate-500 text-[15px] leading-[1.8] line-clamp-3">
+                      {post.content.replace(/<[^>]*>/g, '').slice(0, 200)}
+                    </p>
 
                     {/* Read more link */}
                     <div className="mt-4">
