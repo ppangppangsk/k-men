@@ -241,11 +241,8 @@ export async function initDB() {
           }
           console.log(`Seeded ${seedPosts.length} press releases`);
         }
-      }
-    }
 
-    // 발족식 보도자료 마이그레이션: 없으면 추가
-    if (adminId) {
+        // 발족식 보도자료 마이그레이션: 없으면 추가
       const pressReleasesMigration: { title: string; content: string }[] = [
         {
           title: '"다시, 한국 남자 — 전환적 남성성을 말하다" 한국맨엔게이지네트워크(K-MEN) 7월 9일 발족',
@@ -330,6 +327,7 @@ export async function initDB() {
           );
           console.log(`Added press release: ${pr.title}`);
         }
+      }
       }
     }
 
