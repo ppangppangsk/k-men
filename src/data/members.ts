@@ -9,7 +9,7 @@ export const members: Member[] = [
   { name: '성평등위아', url: 'https://www.weahgender.org/' },
   { name: '수원여성회성평등교육센터 파도', url: 'https://swa.or.kr/' },
   { name: '아하!청소년성문화센터', url: 'https://ahacenter.kr/?ta' },
-  { name: '젠더정의행동 GOMA', url: 'https://blog.naver.com/gomakorea38' },
+  { name: '젠더정의행동GOMA', url: 'https://blog.naver.com/gomakorea38' },
   { name: '젠더교육플랫폼효재', url: 'https://getp.or.kr/' },
   { name: '창원여성살림공동체', url: 'http://www.cwliving.or.kr/' },
   { name: '페미니즘교육연구소 연지원', url: 'https://www.instagram.com/yonziwon' },

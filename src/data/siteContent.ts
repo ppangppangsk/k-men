@@ -50,8 +50,8 @@ export const siteContent = {
     title: '활동 분야',
     description: 'MenEngage Alliance와 함께 다양한 영역에서 성평등을 위한 활동을 펼칩니다.',
     areas: [
-      { icon: '🤝', titleKo: '젠더 기반 폭력 예방', titleEn: 'Gender-Based Violence' },
-      { icon: '👨‍👧‍👦', titleKo: '돌봄과 아버지 역할', titleEn: 'Care and Fatherhood' },
+      { icon: '🤝', titleKo: '젠더기반폭력 예방', titleEn: 'Gender-Based Violence' },
+      { icon: '👨‍👧‍👦', titleKo: '전환적 남성성 확산', titleEn: 'Transformative Masculinity' },
       { icon: '🌈', titleKo: 'LGBTQI+ 권리', titleEn: 'LGBTQI+ Rights' },
       { icon: '✊', titleKo: '여성 인권', titleEn: 'Women\'s Rights' },
       { icon: '🌍', titleKo: '페미니스트 평화', titleEn: 'Feminist Peace' },
@@ -79,7 +79,7 @@ export const siteContent = {
       {
         title: '가입 절차',
         content:
-          '이메일(koreamenengagenetwork@gmail.com)로 단체 소개와 함께 가입 의사를 전달해주시면, K-MEN 운영위원회의 검토 후 승인 절차가 진행됩니다.',
+          '이메일(koreamenengagenetwork@gmail.com)로 단체 소개와 함께 가입 의사를 전달해주시면, K-MEN 대표자 연석회의 검토 후 승인 절차가 진행됩니다.',
       },
       {
         title: '회원 혜택',

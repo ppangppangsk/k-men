@@ -37,8 +37,8 @@ export default function Header() {
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-kmen-orange rounded-xl flex items-center justify-center text-white font-black text-xl tracking-tighter shadow-sm">
-              KM
+            <div className="w-auto h-10 px-3 bg-kmen-orange rounded-xl flex items-center justify-center text-white font-black text-base tracking-tighter shadow-sm">
+              K-MEN
             </div>
             <span className="font-bold text-xl tracking-tight text-slate-900">한국맨엔게이지네트워크</span>
           </Link>

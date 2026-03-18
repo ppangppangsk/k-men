@@ -244,6 +244,95 @@ export async function initDB() {
       }
     }
 
+    // 발족식 보도자료 마이그레이션: 없으면 추가
+    if (adminId) {
+      const pressReleasesMigration: { title: string; content: string }[] = [
+        {
+          title: '"다시, 한국 남자 — 전환적 남성성을 말하다" 한국맨엔게이지네트워크(K-MEN) 7월 9일 발족',
+          content: [
+            `<p>한국 사회에서 남성성에 대한 논의가 새로운 국면을 맞고 있는 지금, 전환적 남성성과 성평등을 실현하기 위한 "한국맨엔게이지네트워크(K-MEN)"가 오는 <strong>7월 9일(수) 오후 7시</strong>, 서울가족플라자 스페이스살림에서 공식 발족식을 연다.</p>`,
+            `<p>"K-MEN(Korean MenEngage Network)"은 세계 90여 개국이 참여하는 국제 네트워크 MenEngage Alliance의 한국 지부로, 남성과 소년을 성평등의 주체로 초대하고, 성평등한 사회를 함께 실현해 가는 협력 네트워크다. 발족식은 '다시, 한국 남자: K-MEN, 성평등으로 동행!'라는 슬로건 아래, 다양한 세대와 배경을 가진 남성과 여성들이 모여 남성성의 전환과 성평등 실천에 대한 공동의 비전을 나누는 자리로 마련되었다.</p>`,
+            `<h3>왜 지금, K-MEN인가?</h3>`,
+            `<p>최근 한국 사회는 젠더 갈등, 안티페미니즘 정서의 확산, 보수 극우 담론의 정치화 등으로 젠더 의제가 분열의 상징처럼 여겨지고 있다. 특히 10대~20대 남성들 사이에서는 역차별 프레임, 왜곡된 성 인식, 디지털 성범죄(딥페이크, 불법촬영물 등)가 현실로 드러나며 사회적 우려를 낳고 있다.</p>`,
+            `<p>이러한 상황 속에서 K-MEN은 남성을 방관자도 피해자도 아닌, 성찰하고 변화할 수 있는 주체로 세우기 위해 출범했다. 이는 성평등을 여성만의 과제로 한정하는 기존 담론을 넘어, 남성성 그 자체를 재정의하고, 함께 책임지는 연대의 언어를 복원하려는 시도다.</p>`,
+            `<h3>K-MEN의 비전과 실천</h3>`,
+            `<p>K-MEN은 지난 1월과 5월 네트워크단체 회원들이 모여 워크숍을 가지고 다음과 같은 비전과 미션, 가치를 만들었다.</p>`,
+            `<ul>`,
+            `<li><strong>비전:</strong> 전환적 남성성 정립을 통한 젠더 정의 실현</li>`,
+            `<li><strong>미션:</strong> 남성과 소년을 성평등의 주체로 초대 / 성평등을 실천하는 국내외 단체들과의 연대 및 네트워크 구축</li>`,
+            `<li><strong>핵심가치:</strong> 존중, 평등, 자기성찰, 변화, 연대</li>`,
+            `</ul>`,
+            `<h3>발족식 행사 개요</h3>`,
+            `<ul>`,
+            `<li><strong>일시:</strong> 2025년 7월 9일(수) 19:00~21:00</li>`,
+            `<li><strong>장소:</strong> 서울가족플라자 스페이스살림 (대방역 3번 출구)</li>`,
+            `</ul>`,
+            `<p><strong>1부 – 발족식</strong></p>`,
+            `<ul>`,
+            `<li>오프닝 영상 – "내가 생각하는 K-MEN"</li>`,
+            `<li>K-MEN, 출발하다 – 단체소개 및 비전 (황금명륜, 젠더교육플랫폼효재 국제협력사업단장)</li>`,
+            `<li>축사 – MenEngage 글로벌 멤버(Jens van Tricht, 네덜란드 Emancipator 대표) 및 국내 인사</li>`,
+            `</ul>`,
+            `<p><strong>2부 – 발족기념 토크쇼 "K-MEN을 말하다"</strong></p>`,
+            `<ul>`,
+            `<li>진행: 이한 (남성과 함께하는 페미니즘)</li>`,
+            `<li>패널: 고상균 (남다른 성교육 연구소), 이호 (페미니즘 동아리 도전한남), 안희제 (『증명과 변명』 저자), 김찬서 (아하청소년성문화센터 청소년운영위원)</li>`,
+            `</ul>`,
+            `<p><strong>마무리 퍼포먼스 "K-MEN을 엮다"</strong> — 손피켓 포토타임 "다시, 한국 남자 : K-MEN, 성평등으로 동행!"</p>`,
+            `<div style="background:#f8fafc;border-radius:1rem;padding:1.5rem 2rem;margin-top:2.5rem">`,
+            `<h3 style="margin-bottom:1rem">문의 및 참여</h3>`,
+            `<p>📧 <a href="mailto:koreamenengagenetwork@gmail.com">koreamenengagenetwork@gmail.com</a></p>`,
+            `<p>💬 <a href="https://open.kakao.com/o/g6G41tmh" target="_blank" rel="noopener noreferrer">오픈카톡방</a></p>`,
+            `</div>`,
+          ].join('\n'),
+        },
+        {
+          title: 'K-MEN 출범, 성평등 사회를 위한 \'새로운 남성성\' 연대 시작',
+          content: [
+            `<p><strong>— 남성성과 성평등을 함께 논하다... 다양한 세대의 공감과 실천 다짐 —</strong></p>`,
+            `<p>성평등한 사회를 함께 만들어갈 한국맨엔게이지네트워크(K-MEN)가 <strong>2025년 7월 9일(화)</strong> 150여명의 시민들이 모여 서울가족플라자 다목적홀에서 공식 출범했다. K-MEN은 남성과 소년을 성평등의 동반자로 초대하고, 새로운 남성성에 대한 사회적 논의를 확산시키기 위한 협력 네트워크다.</p>`,
+            `<p>출범식에는 다양한 배경의 참여자들이 함께해 성평등한 일상을 위한 고민과 실천 의지를 나눴다. '성평등은 함께 만드는 것'이라는 메시지 아래, 정체성과 관계에 대한 성찰, 그리고 변화의 가능성을 공유하는 깊은 공감의 시간이 이어졌다.</p>`,
+            `<h3>성평등한 사회를 향한 K-MEN의 시작, 함께 만드는 변화의 여정</h3>`,
+            `<p>발족식 시작 전, 장내에는 전 세계 각국의 맨앤게이지 회원들이 보낸 축하 메시지가 영상으로 상영되며, K-MEN의 발족에 지구적인 관심과 격려가 있음을 알 수 있었다. 본격적인 발족식 행사는 1부와 2부로 나뉘어 진행됐다.</p>`,
+            `<p>1부에서는 황금명륜 공동 코디네이터가 K-MEN의 결성 배경과 비전, 함께하는 회원단체들을 소개하며 문을 열었다. K-MEN은 2024년 2월, 젠더교육플랫폼효재가 한국에서는 처음으로 맨앤게이지 글로벌 얼라이언스의 회원이 된 후, 글로벌 사무국과 국제포럼을 여는 등의 활동을 해오다가 "성평등과 남성성"에 관심을 두고 활동하는 단체들에게 한국 네트워크 결성을 제안하며 시작되었다.</p>`,
+            `<p>"전환적 남성성 정립을 통해 젠더정의를 실현한다"는 비전 아래 모인 열두개 단체들은 지난 1년 간 일곱차례의 대표자 회의와 두 번의 회원 워크숍을 거치며, 단체 명칭과 미션, 회원의 약속 등에 합의하였다. 한편 K-MEN 발족을 축하하기 위해 유럽 네덜란드의 Emancipator 대표 Jens van Tricht씨가 참석해 축하인사를 했다.</p>`,
+            `<h3>"남자다움에 균열을 내다." — 토크쇼 주요 발언</h3>`,
+            `<p>이날 토크쇼에는 다양한 배경의 남성들이 패널로 참여해 성평등과 남성성에 관한 경험과 시각을 공유했다.</p>`,
+            `<ul>`,
+            `<li><strong>이호</strong>(페미니즘 동아리 '도전한남')는 "'남자다움'은 특히 성의 영역에서 강하게 작동한다"며, "성욕을 증명하지 못하면 조롱받는 왜곡된 문화가 여전히 존재한다"고 비판했다.</li>`,
+            `<li><strong>안희제</strong>(『증명과 변명』 저자)는 "'한국 남자'라는 말이 부정적으로 사용될 때, 이는 남성이라는 범주 자체가 당사자들에게도 좌절로 작용하고 있음을 드러낸다"고 지적했다.</li>`,
+            `<li><strong>김찬서</strong>(아하센터 청소년운영위원)는 "성평등한 관계를 만들기 위해서는 남성이 자신의 정체성을 윤리적으로 재정의해야 한다"고 강조했다.</li>`,
+            `<li><strong>고상균</strong>(남다른 성교육 연구소)은 "남성을 집단적으로 대상화하거나 일반화하는 접근은 위험하다"며, "남성들이 감정을 안전하게 표현할 수 있는 환경이 마련되어야 진정한 해방이 가능하다"고 말했다.</li>`,
+            `</ul>`,
+            `<h3>K-MEN, 일상 속 성평등 실천을 위한 연대 이어간다</h3>`,
+            `<p>참석자들은 이번 출범식을 통해 "성평등은 특정 집단의 과제가 아니라 모두가 함께 실천해야 할 사회적 과제"임을 다시금 확인했다.</p>`,
+            `<p>K-MEN은 앞으로도 소년과 남성들이 자신의 정체성과 관계를 되돌아보고, 성평등한 삶을 실천할 수 있도록 교육, 캠페인, 네트워킹 등의 다양한 활동을 전개할 계획이다.</p>`,
+            `<p>황금명륜 공동코디네이터는 "이번 K-MEN 출범은 소년과 남성이 성평등의 주체로 함께 설 수 있음을 보여주는 신호탄"이라며, "일상의 관계에서부터 성평등을 실천하는 남성들의 연대를 확산해 나가겠다"고 밝혔다.</p>`,
+            `<div style="background:#f8fafc;border-radius:1rem;padding:1.5rem 2rem;margin-top:2.5rem">`,
+            `<h3 style="margin-bottom:1rem">문의</h3>`,
+            `<p style="font-size:0.875rem;color:#64748b;margin-bottom:1rem">본 보도자료에 대한 문의: 한국맨엔게이지네트워크(K-MEN) 사무국</p>`,
+            `<p>📧 <a href="mailto:koreamenengagenetwork@gmail.com">koreamenengagenetwork@gmail.com</a></p>`,
+            `<p>💬 <a href="https://open.kakao.com/o/g6G41tmh" target="_blank" rel="noopener noreferrer">오픈카톡방</a></p>`,
+            `</div>`,
+          ].join('\n'),
+        },
+      ];
+
+      for (const pr of pressReleasesMigration) {
+        const [existingPr] = await conn.execute<mysql.RowDataPacket[]>(
+          'SELECT id FROM posts WHERE title = ? LIMIT 1',
+          [pr.title]
+        );
+        if (existingPr.length === 0) {
+          await conn.execute(
+            'INSERT INTO posts (title, content, type, org_id, image_url) VALUES (?, ?, ?, ?, ?)',
+            [pr.title, pr.content, 'press_release', adminId, null]
+          );
+          console.log(`Added press release: ${pr.title}`);
+        }
+      }
+    }
+
     console.log('Database tables initialized');
   } finally {
     conn.release();
