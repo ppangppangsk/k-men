@@ -314,6 +314,22 @@ async function initDB() {
         }
       }
     }
+    const dateFixMap = [
+      ['"\uB2E4\uC2DC, \uD55C\uAD6D \uB0A8\uC790 \u2014 \uC804\uD658\uC801 \uB0A8\uC131\uC131\uC744 \uB9D0\uD558\uB2E4"%', "2025-06-27 00:00:00"],
+      ["K-MEN \uCD9C\uBC94, \uC131\uD3C9\uB4F1 \uC0AC\uD68C\uB97C \uC704\uD55C%", "2025-07-10 00:00:00"],
+      ["K-MEN, \uC131\uD3C9\uB4F1\uC8FC\uAC04\uC5D0 \uD568\uAED8\uD558\uB294 '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uC120\uD3EC", "2025-09-01 00:00:00"],
+      ["[GOMA]%", "2025-09-01 01:00:00"],
+      ["[\uBD04\uB3CC]%", "2025-09-01 02:00:00"],
+      ["[\uCC3D\uC6D0\uC5EC\uC131\uC0B4\uB9BC\uACF5\uB3D9\uCCB4]%", "2025-09-01 03:00:00"],
+      ["[\uC131\uD3C9\uB4F1\uC704\uC57C]%", "2025-09-01 04:00:00"],
+      ["[\uC820\uB354\uAD50\uC721\uD50C\uB7AB\uD3FC\uD6A8\uC7AC]%", "2025-09-01 05:00:00"]
+    ];
+    for (const [titlePattern, date] of dateFixMap) {
+      await conn.execute(
+        "UPDATE posts SET created_at = ? WHERE title LIKE ? AND type = ?",
+        [date, titlePattern, "press_release"]
+      );
+    }
     console.log("Database tables initialized");
   } finally {
     conn.release();

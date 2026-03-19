@@ -331,6 +331,24 @@ export async function initDB() {
       }
     }
 
+    // 보도자료 날짜 정렬: 실제 행사 날짜로 created_at 수정
+    const dateFixMap: [string, string][] = [
+      ['"다시, 한국 남자 — 전환적 남성성을 말하다"%', '2025-06-27 00:00:00'],
+      ['K-MEN 출범, 성평등 사회를 위한%', '2025-07-10 00:00:00'],
+      ["K-MEN, 성평등주간에 함께하는 '소년과 남성의 날' 선포", '2025-09-01 00:00:00'],
+      ['[GOMA]%', '2025-09-01 01:00:00'],
+      ['[봄돌]%', '2025-09-01 02:00:00'],
+      ['[창원여성살림공동체]%', '2025-09-01 03:00:00'],
+      ['[성평등위야]%', '2025-09-01 04:00:00'],
+      ['[젠더교육플랫폼효재]%', '2025-09-01 05:00:00'],
+    ];
+    for (const [titlePattern, date] of dateFixMap) {
+      await conn.execute(
+        'UPDATE posts SET created_at = ? WHERE title LIKE ? AND type = ?',
+        [date, titlePattern, 'press_release']
+      );
+    }
+
     console.log('Database tables initialized');
   } finally {
     conn.release();
