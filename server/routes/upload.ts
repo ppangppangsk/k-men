@@ -6,7 +6,9 @@ import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-const uploadDir = path.join(process.cwd(), 'uploads');
+const uploadDir = process.env.NODE_ENV === 'production'
+  ? path.resolve(process.cwd(), '..', 'kmen-uploads')
+  : path.join(process.cwd(), 'uploads');
 
 // uploads 디렉토리 보장
 if (!fs.existsSync(uploadDir)) {

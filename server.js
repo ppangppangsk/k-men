@@ -451,7 +451,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 var router2 = Router2();
-var uploadDir = path.join(process.cwd(), "uploads");
+var uploadDir = process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -711,7 +711,7 @@ import { Router as Router4 } from "express";
 import multer2 from "multer";
 import path2 from "path";
 import fs2 from "fs";
-var uploadDir2 = path2.join(process.cwd(), "uploads");
+var uploadDir2 = process.env.NODE_ENV === "production" ? path2.resolve(process.cwd(), "..", "kmen-uploads") : path2.join(process.cwd(), "uploads");
 if (!fs2.existsSync(uploadDir2)) {
   fs2.mkdirSync(uploadDir2, { recursive: true });
 }
@@ -1122,7 +1122,8 @@ app.use("/api/admin", admin_default);
 app.use("/api/media", upload_default);
 app.use("/api/faq", faq_default);
 app.use("/api/qna", qna_default);
-app.use("/uploads", express.static(path3.join(process.cwd(), "uploads")));
+var uploadsDir = process.env.NODE_ENV === "production" ? path3.resolve(process.cwd(), "..", "kmen-uploads") : path3.join(process.cwd(), "uploads");
+app.use("/uploads", express.static(uploadsDir));
 var distPath = path3.join(process.cwd(), "dist");
 app.use(express.static(distPath));
 app.get(/^\/(?!api).*/, (_req, res) => {

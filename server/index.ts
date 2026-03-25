@@ -30,8 +30,11 @@ app.use('/api/media', uploadRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/qna', qnaRoutes);
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Serve uploaded files (프로덕션: 상위 kmen-uploads, 개발: 프로젝트 내 uploads)
+const uploadsDir = process.env.NODE_ENV === 'production'
+  ? path.resolve(process.cwd(), '..', 'kmen-uploads')
+  : path.join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // Production: serve static files
 const distPath = path.join(process.cwd(), 'dist');
