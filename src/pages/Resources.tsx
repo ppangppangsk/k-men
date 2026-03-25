@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Image, Film, FileText, Download, Calendar, User } from 'lucide-react';
+import { Image, Film, FileText, Download, Calendar, User, LayoutGrid, Square, Maximize2 } from 'lucide-react';
 import SectionTitle from '../components/ui/SectionTitle';
 import { api } from '../lib/api';
 import type { Media, Post } from '../types';
@@ -18,6 +18,7 @@ export default function Resources() {
   const [media, setMedia] = useState<Media[]>([]);
   const [documents, setDocuments] = useState<Post[]>([]);
   const [tab, setTab] = useState<Tab>('photo');
+  const [viewSize, setViewSize] = useState<'large' | 'medium' | 'small'>('medium');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,6 +75,31 @@ export default function Resources() {
               </button>
             ))}
           </div>
+
+          {/* View size toggle (photo/video only) */}
+          {tab !== 'document' && (
+            <div className="flex items-center gap-1 mb-6 justify-end">
+              <span className="text-xs text-slate-400 mr-2">보기</span>
+              {([
+                { key: 'small' as const, icon: LayoutGrid, label: '작게' },
+                { key: 'medium' as const, icon: Square, label: '보통' },
+                { key: 'large' as const, icon: Maximize2, label: '크게' },
+              ]).map((v) => (
+                <button
+                  key={v.key}
+                  onClick={() => setViewSize(v.key)}
+                  title={v.label}
+                  className={`p-1.5 rounded-lg transition-colors ${
+                    viewSize === v.key
+                      ? 'bg-kmen-orange text-white'
+                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                  }`}
+                >
+                  <v.icon className="w-4 h-4" />
+                </button>
+              ))}
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center py-20 text-slate-400">불러오는 중...</div>
@@ -142,7 +168,13 @@ export default function Resources() {
                 등록된 {tab === 'photo' ? '사진' : '영상'} 자료가 없습니다.
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className={
+                viewSize === 'small'
+                  ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'
+                  : viewSize === 'medium'
+                    ? 'grid grid-cols-1 sm:grid-cols-2 gap-5'
+                    : 'space-y-6'
+              }>
                 {filteredMedia.map((item, i) => {
                   const isImage = item.mime_type.startsWith('image/');
                   const isVideo = item.mime_type.startsWith('video/');
@@ -161,12 +193,12 @@ export default function Resources() {
                       />
 
                       {/* Media Preview */}
-                      <div className="bg-slate-50 flex items-center justify-center">
+                      <div className={`bg-slate-50 flex items-center justify-center ${viewSize === 'large' ? '' : 'aspect-video'}`}>
                         {isImage ? (
                           <img
                             src={item.url}
                             alt={item.title || ''}
-                            className="w-full"
+                            className={viewSize === 'large' ? 'w-full' : 'w-full h-full object-cover'}
                           />
                         ) : isVideo ? (
                           <video
@@ -185,34 +217,25 @@ export default function Resources() {
                       </div>
 
                       {/* Info */}
-                      <div className="p-5">
-                        {item.description && (
+                      <div className={viewSize === 'small' ? 'p-3' : 'p-5'}>
+                        {item.description && viewSize !== 'small' && (
                           <p className="text-slate-600 leading-relaxed mb-3">
                             {item.description}
                           </p>
                         )}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 text-sm text-slate-400">
+                        <div className={viewSize === 'small' ? 'flex items-center justify-between' : 'flex items-center justify-between'}>
+                          <div className={`flex items-center gap-3 ${viewSize === 'small' ? 'text-xs' : 'text-sm'} text-slate-400`}>
                             <span className="flex items-center gap-1.5">
                               <Calendar className="w-3.5 h-3.5" />
                               {new Date(item.created_at).toLocaleDateString('ko-KR')}
-                            </span>
-                            <span
-                              className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                item.category === 'photo'
-                                  ? 'bg-orange-50 text-kmen-orange'
-                                  : 'bg-green-50 text-kmen-green'
-                              }`}
-                            >
-                              {item.category === 'photo' ? '사진' : '영상'}
                             </span>
                           </div>
                           <a
                             href={item.url}
                             download
-                            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-kmen-orange transition-colors"
+                            className={`flex items-center gap-1.5 ${viewSize === 'small' ? 'text-xs' : 'text-sm'} text-slate-500 hover:text-kmen-orange transition-colors`}
                           >
-                            <Download className="w-4 h-4" />
+                            <Download className={viewSize === 'small' ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
                             {formatSize(item.size)}
                           </a>
                         </div>
