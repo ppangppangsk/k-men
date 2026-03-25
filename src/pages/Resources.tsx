@@ -193,12 +193,18 @@ export default function Resources() {
                       />
 
                       {/* Media Preview */}
-                      <div className={`bg-slate-50 flex items-center justify-center ${viewSize === 'large' ? '' : 'aspect-video'}`}>
+                      <div className="bg-slate-50 flex items-center justify-center">
                         {isImage ? (
                           <img
                             src={item.url}
                             alt={item.title || ''}
-                            className={viewSize === 'large' ? 'w-full' : 'w-full h-full object-cover'}
+                            className={
+                              viewSize === 'small'
+                                ? 'w-full max-h-[250px] object-contain'
+                                : viewSize === 'medium'
+                                  ? 'w-full max-h-[400px] object-contain'
+                                  : 'w-full'
+                            }
                           />
                         ) : isVideo ? (
                           <video
