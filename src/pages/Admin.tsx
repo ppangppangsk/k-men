@@ -57,9 +57,9 @@ function PostForm({
   const actualType = (fixedTypes as readonly string[]).includes(postType) ? postType : selectedType;
 
   const handleImageUpload = useCallback(async (file: File): Promise<string> => {
-    const result = await api.uploadPostFile(file);
+    const result = await api.uploadPostFile(file, actualType);
     return result.url;
-  }, []);
+  }, [actualType]);
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) {
@@ -194,7 +194,7 @@ function PostForm({
               if (!file) return;
               setFileUploading(true);
               try {
-                const result = await api.uploadPostFile(file);
+                const result = await api.uploadPostFile(file, actualType);
                 setFileUrl(result.url);
               } catch (err) {
                 alert(err instanceof Error ? err.message : '파일 업로드 실패');

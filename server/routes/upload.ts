@@ -6,17 +6,17 @@ import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-const uploadDir = process.env.NODE_ENV === 'production'
+const uploadsRoot = process.env.NODE_ENV === 'production'
   ? path.resolve(process.cwd(), '..', 'kmen-uploads')
   : path.join(process.cwd(), 'uploads');
 
-// uploads 디렉토리 보장
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const mediaDir = path.join(uploadsRoot, 'media');
+if (!fs.existsSync(mediaDir)) {
+  fs.mkdirSync(mediaDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
+  destination: (_req, _file, cb) => cb(null, mediaDir),
   filename: (_req, file, cb) => {
     const decoded = Buffer.from(file.originalname, 'latin1').toString('utf8');
     const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
     const base = safeName.slice(0, -ext.length || undefined);
     let finalName = safeName;
     let counter = 1;
-    while (fs.existsSync(path.join(uploadDir, finalName))) {
+    while (fs.existsSync(path.join(mediaDir, finalName))) {
       finalName = `${base}_(${counter})${ext}`;
       counter++;
     }
@@ -83,7 +83,7 @@ router.post(
 
       res.status(201).json({
         id: result.insertId,
-        url: `/uploads/${req.file.filename}`,
+        url: `/uploads/media/${req.file.filename}`,
         filename: req.file.filename,
         original_name: req.file.originalname,
       });
@@ -111,7 +111,7 @@ router.get('/', async (req, res) => {
     const [rows] = await pool.execute<RowDataPacket[]>(query, params);
     const media = (rows as RowDataPacket[]).map((row) => ({
       ...row,
-      url: `/uploads/${row.filename}`,
+      url: `/uploads/media/${row.filename}`,
     }));
     res.json(media);
   } catch (err) {
@@ -143,7 +143,7 @@ router.patch('/:id', authMiddleware, adminMiddleware, async (req: AuthRequest, r
       [req.params.id]
     );
     const row = rows[0];
-    res.json({ ...row, url: `/uploads/${row.filename}` });
+    res.json({ ...row, url: `/uploads/media/${row.filename}` });
   } catch (err) {
     console.error('Update media error:', err);
     res.status(500).json({ error: '서버 오류가 발생했습니다.' });
@@ -164,7 +164,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req: AuthRequest, 
     }
 
     // 파일 삭제
-    const filePath = path.join(uploadDir, rows[0].filename);
+    const filePath = path.join(mediaDir, rows[0].filename);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }

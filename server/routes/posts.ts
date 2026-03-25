@@ -8,29 +8,47 @@ import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = Router();
 
-// PDF 업로드 설정
-const uploadDir = process.env.NODE_ENV === 'production'
+// 업로드 루트 디렉토리
+const uploadsRoot = process.env.NODE_ENV === 'production'
   ? path.resolve(process.cwd(), '..', 'kmen-uploads')
   : path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+
+const validPostTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
+
+function getUploadDir(postType?: string): string {
+  const subdir = validPostTypes.includes(postType || '') ? postType! : 'general';
+  const dir = path.join(uploadsRoot, subdir);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+}
+
+function uniqueFilename(dir: string, originalName: string): string {
+  const decoded = Buffer.from(originalName, 'latin1').toString('utf8');
+  const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
+  const ext = path.extname(safeName);
+  const base = safeName.slice(0, -ext.length || undefined);
+  let finalName = safeName;
+  let counter = 1;
+  while (fs.existsSync(path.join(dir, finalName))) {
+    finalName = `${base}_(${counter})${ext}`;
+    counter++;
+  }
+  return finalName;
 }
 
 const postFileUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => {
-      const decoded = Buffer.from(file.originalname, 'latin1').toString('utf8');
-      const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
-      const ext = path.extname(safeName);
-      const base = safeName.slice(0, -ext.length || undefined);
-      let finalName = safeName;
-      let counter = 1;
-      while (fs.existsSync(path.join(uploadDir, finalName))) {
-        finalName = `${base}_(${counter})${ext}`;
-        counter++;
-      }
-      cb(null, finalName);
+    destination: (req, _file, cb) => {
+      const postType = (req.query?.type as string) || 'general';
+      const dir = getUploadDir(postType);
+      (req as any)._uploadDir = dir;
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      const dir = (req as any)._uploadDir || uploadsRoot;
+      cb(null, uniqueFilename(dir, file.originalname));
     },
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -50,8 +68,10 @@ router.post('/upload', authMiddleware, postFileUpload.single('file'), async (req
     res.status(400).json({ error: '파일이 없습니다.' });
     return;
   }
+  // 파일이 저장된 하위 디렉토리 추출
+  const relDir = path.relative(uploadsRoot, path.dirname(req.file.path));
   res.json({
-    url: `/uploads/${req.file.filename}`,
+    url: `/uploads/${relDir}/${req.file.filename}`,
     original_name: req.file.originalname,
   });
 });

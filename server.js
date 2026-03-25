@@ -451,25 +451,40 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 var router2 = Router2();
-var uploadDir = process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+var uploadsRoot = process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
+var validPostTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
+function getUploadDir(postType) {
+  const subdir = validPostTypes.includes(postType || "") ? postType : "general";
+  const dir = path.join(uploadsRoot, subdir);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+}
+function uniqueFilename(dir, originalName) {
+  const decoded = Buffer.from(originalName, "latin1").toString("utf8");
+  const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
+  const ext = path.extname(safeName);
+  const base = safeName.slice(0, -ext.length || void 0);
+  let finalName = safeName;
+  let counter = 1;
+  while (fs.existsSync(path.join(dir, finalName))) {
+    finalName = `${base}_(${counter})${ext}`;
+    counter++;
+  }
+  return finalName;
 }
 var postFileUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => {
-      const decoded = Buffer.from(file.originalname, "latin1").toString("utf8");
-      const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
-      const ext = path.extname(safeName);
-      const base = safeName.slice(0, -ext.length || void 0);
-      let finalName = safeName;
-      let counter = 1;
-      while (fs.existsSync(path.join(uploadDir, finalName))) {
-        finalName = `${base}_(${counter})${ext}`;
-        counter++;
-      }
-      cb(null, finalName);
+    destination: (req, _file, cb) => {
+      const postType = req.query?.type || "general";
+      const dir = getUploadDir(postType);
+      req._uploadDir = dir;
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      const dir = req._uploadDir || uploadsRoot;
+      cb(null, uniqueFilename(dir, file.originalname));
     }
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -487,8 +502,9 @@ router2.post("/upload", authMiddleware, postFileUpload.single("file"), async (re
     res.status(400).json({ error: "\uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4." });
     return;
   }
+  const relDir = path.relative(uploadsRoot, path.dirname(req.file.path));
   res.json({
-    url: `/uploads/${req.file.filename}`,
+    url: `/uploads/${relDir}/${req.file.filename}`,
     original_name: req.file.originalname
   });
 });
@@ -720,12 +736,13 @@ import { Router as Router4 } from "express";
 import multer2 from "multer";
 import path2 from "path";
 import fs2 from "fs";
-var uploadDir2 = process.env.NODE_ENV === "production" ? path2.resolve(process.cwd(), "..", "kmen-uploads") : path2.join(process.cwd(), "uploads");
-if (!fs2.existsSync(uploadDir2)) {
-  fs2.mkdirSync(uploadDir2, { recursive: true });
+var uploadsRoot2 = process.env.NODE_ENV === "production" ? path2.resolve(process.cwd(), "..", "kmen-uploads") : path2.join(process.cwd(), "uploads");
+var mediaDir = path2.join(uploadsRoot2, "media");
+if (!fs2.existsSync(mediaDir)) {
+  fs2.mkdirSync(mediaDir, { recursive: true });
 }
 var storage = multer2.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir2),
+  destination: (_req, _file, cb) => cb(null, mediaDir),
   filename: (_req, file, cb) => {
     const decoded = Buffer.from(file.originalname, "latin1").toString("utf8");
     const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
@@ -733,7 +750,7 @@ var storage = multer2.diskStorage({
     const base = safeName.slice(0, -ext.length || void 0);
     let finalName = safeName;
     let counter = 1;
-    while (fs2.existsSync(path2.join(uploadDir2, finalName))) {
+    while (fs2.existsSync(path2.join(mediaDir, finalName))) {
       finalName = `${base}_(${counter})${ext}`;
       counter++;
     }
@@ -790,7 +807,7 @@ router4.post(
       );
       res.status(201).json({
         id: result.insertId,
-        url: `/uploads/${req.file.filename}`,
+        url: `/uploads/media/${req.file.filename}`,
         filename: req.file.filename,
         original_name: req.file.originalname
       });
@@ -813,7 +830,7 @@ router4.get("/", async (req, res) => {
     const [rows] = await db_default.execute(query, params);
     const media = rows.map((row) => ({
       ...row,
-      url: `/uploads/${row.filename}`
+      url: `/uploads/media/${row.filename}`
     }));
     res.json(media);
   } catch (err) {
@@ -841,7 +858,7 @@ router4.patch("/:id", authMiddleware, adminMiddleware, async (req, res) => {
       [req.params.id]
     );
     const row = rows[0];
-    res.json({ ...row, url: `/uploads/${row.filename}` });
+    res.json({ ...row, url: `/uploads/media/${row.filename}` });
   } catch (err) {
     console.error("Update media error:", err);
     res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4." });
@@ -857,7 +874,7 @@ router4.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
       res.status(404).json({ error: "\uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." });
       return;
     }
-    const filePath = path2.join(uploadDir2, rows[0].filename);
+    const filePath = path2.join(mediaDir, rows[0].filename);
     if (fs2.existsSync(filePath)) {
       fs2.unlinkSync(filePath);
     }

@@ -186,7 +186,7 @@ export default function DashboardNewPost() {
                   if (!file) return;
                   setFileUploading(true);
                   try {
-                    const result = await api.uploadPostFile(file);
+                    const result = await api.uploadPostFile(file, type);
                     setFileUrl(result.url);
                   } catch (err) {
                     alert(err instanceof Error ? err.message : '파일 업로드 실패');

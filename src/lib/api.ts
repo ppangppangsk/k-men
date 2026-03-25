@@ -67,11 +67,12 @@ export const api = {
     return request<Post[]>('/posts/my');
   },
 
-  async uploadPostFile(file: File): Promise<{ url: string; original_name: string }> {
+  async uploadPostFile(file: File, postType?: string): Promise<{ url: string; original_name: string }> {
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch(`${BASE}/posts/upload`, {
+    const query = postType ? `?type=${postType}` : '';
+    const res = await fetch(`${BASE}/posts/upload${query}`, {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
