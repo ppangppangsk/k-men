@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, useRef, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
@@ -21,6 +21,7 @@ export default function DashboardNewPost() {
   const [imageUrl, setImageUrl] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [fileUploading, setFileUploading] = useState(false);
+  const fileAttachRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [contentReady, setContentReady] = useState(!editId);
@@ -175,30 +176,37 @@ export default function DashboardNewPost() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">PDF 첨부 (선택)</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setFileUploading(true);
-                    try {
-                      const result = await api.uploadPostFile(file);
-                      setFileUrl(result.url);
-                    } catch (err) {
-                      alert(err instanceof Error ? err.message : '파일 업로드 실패');
-                    } finally {
-                      setFileUploading(false);
-                    }
-                  }}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm"
-                />
-                {fileUploading && <span className="text-xs text-slate-400 whitespace-nowrap">업로드 중...</span>}
-                {fileUrl && !fileUploading && <span className="text-xs text-green-600 whitespace-nowrap">첨부 완료</span>}
-              </div>
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileAttachRef}
+                type="file"
+                accept="application/pdf"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setFileUploading(true);
+                  try {
+                    const result = await api.uploadPostFile(file);
+                    setFileUrl(result.url);
+                  } catch (err) {
+                    alert(err instanceof Error ? err.message : '파일 업로드 실패');
+                  } finally {
+                    setFileUploading(false);
+                  }
+                }}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileAttachRef.current?.click()}
+                disabled={fileUploading}
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                {fileUploading ? '업로드 중...' : '파일 첨부'}
+              </button>
+              {fileUrl && !fileUploading && (
+                <span className="text-sm text-green-600 font-medium">{fileUrl.split('/').pop()}</span>
+              )}
             </div>
 
             <div>

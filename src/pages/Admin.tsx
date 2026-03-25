@@ -50,6 +50,7 @@ function PostForm({
   );
   const [fileUrl, setFileUrl] = useState(editingPost?.file_url ?? '');
   const [fileUploading, setFileUploading] = useState(false);
+  const fileAttachRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const fixedTypes = ['press_release', 'notice', 'document'] as const;
@@ -182,33 +183,38 @@ function PostForm({
           />
         )}
 
-        {/* PDF 첨부 */}
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">PDF 첨부 (선택)</label>
-          <div className="flex items-center gap-3">
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                setFileUploading(true);
-                try {
-                  const result = await api.uploadPostFile(file);
-                  setFileUrl(result.url);
-                } catch (err) {
-                  alert(err instanceof Error ? err.message : '파일 업로드 실패');
-                } finally {
-                  setFileUploading(false);
-                }
-              }}
-              className="text-sm"
-            />
-            {fileUploading && <span className="text-xs text-slate-400">업로드 중...</span>}
-            {fileUrl && !fileUploading && (
-              <span className="text-xs text-green-600">첨부 완료</span>
-            )}
-          </div>
+        {/* 파일 첨부 */}
+        <div className="flex items-center gap-3">
+          <input
+            ref={fileAttachRef}
+            type="file"
+            accept="application/pdf"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setFileUploading(true);
+              try {
+                const result = await api.uploadPostFile(file);
+                setFileUrl(result.url);
+              } catch (err) {
+                alert(err instanceof Error ? err.message : '파일 업로드 실패');
+              } finally {
+                setFileUploading(false);
+              }
+            }}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileAttachRef.current?.click()}
+            disabled={fileUploading}
+            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            {fileUploading ? '업로드 중...' : '파일 첨부'}
+          </button>
+          {fileUrl && !fileUploading && (
+            <span className="text-sm text-green-600 font-medium">{fileUrl.split('/').pop()}</span>
+          )}
         </div>
 
         <RichTextEditor
