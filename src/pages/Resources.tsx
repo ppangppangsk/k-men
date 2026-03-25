@@ -161,12 +161,12 @@ export default function Resources() {
                       />
 
                       {/* Media Preview */}
-                      <div className="aspect-video bg-slate-50 flex items-center justify-center">
+                      <div className="bg-slate-50 flex items-center justify-center">
                         {isImage ? (
                           <img
                             src={item.url}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
+                            alt={item.title || ''}
+                            className="w-full"
                           />
                         ) : isVideo ? (
                           <video
@@ -186,9 +186,6 @@ export default function Resources() {
 
                       {/* Info */}
                       <div className="p-5">
-                        <h3 className="text-lg font-bold text-slate-900 mb-1">
-                          {item.title}
-                        </h3>
                         {item.description && (
                           <p className="text-slate-600 leading-relaxed mb-3">
                             {item.description}
