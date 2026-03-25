@@ -56,7 +56,7 @@ function PostForm({
   const actualType = (fixedTypes as readonly string[]).includes(postType) ? postType : selectedType;
 
   const handleImageUpload = useCallback(async (file: File): Promise<string> => {
-    const result = await api.media.upload(file, { category: 'photo' });
+    const result = await api.uploadPostFile(file);
     return result.url;
   }, []);
 

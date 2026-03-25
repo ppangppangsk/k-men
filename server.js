@@ -455,7 +455,7 @@ var uploadDir = process.env.NODE_ENV === "production" ? path.resolve(process.cwd
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
-var pdfUpload = multer({
+var postFileUpload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadDir),
     filename: (_req, file, cb) => {
@@ -474,14 +474,15 @@ var pdfUpload = multer({
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    const allowed = ["application/pdf", "image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("PDF \uD30C\uC77C\uB9CC \uCCA8\uBD80\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."));
+      cb(new Error("PDF \uB610\uB294 \uC774\uBBF8\uC9C0 \uD30C\uC77C\uB9CC \uC5C5\uB85C\uB4DC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."));
     }
   }
 });
-router2.post("/upload", authMiddleware, pdfUpload.single("file"), async (req, res) => {
+router2.post("/upload", authMiddleware, postFileUpload.single("file"), async (req, res) => {
   if (!req.file) {
     res.status(400).json({ error: "\uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4." });
     return;

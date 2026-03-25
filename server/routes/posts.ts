@@ -16,7 +16,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const pdfUpload = multer({
+const postFileUpload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadDir),
     filename: (_req, file, cb) => {
@@ -35,16 +35,17 @@ const pdfUpload = multer({
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype === 'application/pdf') {
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('PDF 파일만 첨부할 수 있습니다.'));
+      cb(new Error('PDF 또는 이미지 파일만 업로드할 수 있습니다.'));
     }
   },
 });
 
 // 게시글 파일 업로드 (인증 필요)
-router.post('/upload', authMiddleware, pdfUpload.single('file'), async (req: AuthRequest, res: Response) => {
+router.post('/upload', authMiddleware, postFileUpload.single('file'), async (req: AuthRequest, res: Response) => {
   if (!req.file) {
     res.status(400).json({ error: '파일이 없습니다.' });
     return;
