@@ -72,7 +72,7 @@ export default function RichTextEditor({
       setImageUploading(true);
       try {
         const url = await onImageUpload(file);
-        editor.chain().focus().setImage({ src: url }).run();
+        editor.chain().focus('end').setImage({ src: url }).run();
       } catch (err) {
         alert(err instanceof Error ? err.message : '이미지 업로드 실패');
       } finally {
