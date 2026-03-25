@@ -43,14 +43,14 @@ export const api = {
     return request<Post>(`/posts/${id}`);
   },
 
-  createPost(data: Pick<Post, 'title' | 'content' | 'type' | 'event_date' | 'image_url'> & { summary?: string }) {
+  createPost(data: Pick<Post, 'title' | 'content' | 'type' | 'event_date' | 'image_url'> & { summary?: string; file_url?: string }) {
     return request<Post>('/posts', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
 
-  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'event_date' | 'image_url'>> & { summary?: string }) {
+  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'event_date' | 'image_url'>> & { summary?: string; file_url?: string }) {
     return request<Post>(`/posts/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -65,6 +65,22 @@ export const api = {
 
   getMyPosts() {
     return request<Post[]>('/posts/my');
+  },
+
+  async uploadPostFile(file: File): Promise<{ url: string; original_name: string }> {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${BASE}/posts/upload`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `HTTP ${res.status}`);
+    }
+    return res.json();
   },
 
   // Admin

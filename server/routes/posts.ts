@@ -1,9 +1,49 @@
 import { Router, type Request, type Response } from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import pool from '../db';
 import { authMiddleware, type AuthRequest } from '../middleware/auth';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = Router();
+
+// PDF 업로드 설정
+const uploadDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const pdfUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+      cb(null, name);
+    },
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('PDF 파일만 첨부할 수 있습니다.'));
+    }
+  },
+});
+
+// 게시글 파일 업로드 (인증 필요)
+router.post('/upload', authMiddleware, pdfUpload.single('file'), async (req: AuthRequest, res: Response) => {
+  if (!req.file) {
+    res.status(400).json({ error: '파일이 없습니다.' });
+    return;
+  }
+  res.json({
+    url: `/uploads/${req.file.filename}`,
+    original_name: req.file.originalname,
+  });
+});
 
 // 게시글 목록 (공개)
 router.get('/', async (req: Request, res: Response) => {
@@ -72,7 +112,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // 게시글 작성 (인증 필요)
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { title, content, type, event_date, image_url, summary } = req.body;
+  const { title, content, type, event_date, image_url, file_url, summary } = req.body;
 
   if (!title || !content || !type) {
     res.status(400).json({ error: '제목, 내용, 유형을 모두 입력해주세요.' });
@@ -93,8 +133,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 
   try {
     const [result] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO posts (title, content, summary, type, org_id, event_date, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [title, content, summary || null, type, req.orgId, event_date || null, image_url || null]
+      'INSERT INTO posts (title, content, summary, type, org_id, event_date, image_url, file_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [title, content, summary || null, type, req.orgId, event_date || null, image_url || null, file_url || null]
     );
 
     const [rows] = await pool.execute<RowDataPacket[]>(
@@ -111,7 +151,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 
 // 게시글 수정 (본인 글만, admin은 모두 수정 가능)
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { title, content, event_date, image_url, summary } = req.body;
+  const { title, content, event_date, image_url, file_url, summary } = req.body;
 
   try {
     const [existing] = await pool.execute<RowDataPacket[]>(
@@ -130,8 +170,8 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
     }
 
     await pool.execute(
-      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ? WHERE id = ?',
-      [title, content, summary !== undefined ? summary : null, event_date || null, image_url || null, req.params.id]
+      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?',
+      [title, content, summary !== undefined ? summary : null, event_date || null, image_url || null, file_url !== undefined ? (file_url || null) : null, req.params.id]
     );
 
     const [rows] = await pool.execute<RowDataPacket[]>(

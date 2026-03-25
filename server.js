@@ -1,7 +1,7 @@
 // server/index.ts
 import express from "express";
 import cors from "cors";
-import path2 from "path";
+import path3 from "path";
 import { fileURLToPath } from "url";
 import dotenv2 from "dotenv";
 
@@ -58,6 +58,10 @@ async function initDB() {
     }
     try {
       await conn.execute(`ALTER TABLE posts ADD COLUMN summary TEXT NULL AFTER content`);
+    } catch {
+    }
+    try {
+      await conn.execute(`ALTER TABLE posts ADD COLUMN file_url VARCHAR(500) NULL AFTER image_url`);
     } catch {
     }
     await conn.execute(`
@@ -443,7 +447,42 @@ var auth_default = router;
 
 // server/routes/posts.ts
 import { Router as Router2 } from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 var router2 = Router2();
+var uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+var pdfUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+      cb(null, name);
+    }
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("PDF \uD30C\uC77C\uB9CC \uCCA8\uBD80\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."));
+    }
+  }
+});
+router2.post("/upload", authMiddleware, pdfUpload.single("file"), async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: "\uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4." });
+    return;
+  }
+  res.json({
+    url: `/uploads/${req.file.filename}`,
+    original_name: req.file.originalname
+  });
+});
 router2.get("/", async (req, res) => {
   const { type } = req.query;
   try {
@@ -499,7 +538,7 @@ router2.get("/:id", async (req, res) => {
   }
 });
 router2.post("/", authMiddleware, async (req, res) => {
-  const { title, content, type, event_date, image_url, summary } = req.body;
+  const { title, content, type, event_date, image_url, file_url, summary } = req.body;
   if (!title || !content || !type) {
     res.status(400).json({ error: "\uC81C\uBAA9, \uB0B4\uC6A9, \uC720\uD615\uC744 \uBAA8\uB450 \uC785\uB825\uD574\uC8FC\uC138\uC694." });
     return;
@@ -515,8 +554,8 @@ router2.post("/", authMiddleware, async (req, res) => {
   }
   try {
     const [result] = await db_default.execute(
-      "INSERT INTO posts (title, content, summary, type, org_id, event_date, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [title, content, summary || null, type, req.orgId, event_date || null, image_url || null]
+      "INSERT INTO posts (title, content, summary, type, org_id, event_date, image_url, file_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [title, content, summary || null, type, req.orgId, event_date || null, image_url || null, file_url || null]
     );
     const [rows] = await db_default.execute(
       "SELECT * FROM posts WHERE id = ?",
@@ -529,7 +568,7 @@ router2.post("/", authMiddleware, async (req, res) => {
   }
 });
 router2.put("/:id", authMiddleware, async (req, res) => {
-  const { title, content, event_date, image_url, summary } = req.body;
+  const { title, content, event_date, image_url, file_url, summary } = req.body;
   try {
     const [existing] = await db_default.execute(
       "SELECT org_id FROM posts WHERE id = ?",
@@ -544,8 +583,8 @@ router2.put("/:id", authMiddleware, async (req, res) => {
       return;
     }
     await db_default.execute(
-      "UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ? WHERE id = ?",
-      [title, content, summary !== void 0 ? summary : null, event_date || null, image_url || null, req.params.id]
+      "UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?",
+      [title, content, summary !== void 0 ? summary : null, event_date || null, image_url || null, file_url !== void 0 ? file_url || null : null, req.params.id]
     );
     const [rows] = await db_default.execute(
       "SELECT * FROM posts WHERE id = ?",
@@ -669,22 +708,22 @@ var admin_default = router3;
 
 // server/routes/upload.ts
 import { Router as Router4 } from "express";
-import multer from "multer";
-import path from "path";
-import fs from "fs";
-var uploadDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+import multer2 from "multer";
+import path2 from "path";
+import fs2 from "fs";
+var uploadDir2 = path2.join(process.cwd(), "uploads");
+if (!fs2.existsSync(uploadDir2)) {
+  fs2.mkdirSync(uploadDir2, { recursive: true });
 }
-var storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
+var storage = multer2.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir2),
   filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname);
+    const ext = path2.extname(file.originalname);
     const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
     cb(null, name);
   }
 });
-var upload = multer({
+var upload = multer2({
   storage,
   limits: { fileSize: 50 * 1024 * 1024 },
   // 50MB
@@ -801,9 +840,9 @@ router4.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
       res.status(404).json({ error: "\uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." });
       return;
     }
-    const filePath = path.join(uploadDir, rows[0].filename);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    const filePath = path2.join(uploadDir2, rows[0].filename);
+    if (fs2.existsSync(filePath)) {
+      fs2.unlinkSync(filePath);
     }
     await db_default.execute("DELETE FROM media WHERE id = ?", [req.params.id]);
     res.json({ message: "\uC0AD\uC81C\uB418\uC5C8\uC2B5\uB2C8\uB2E4." });
@@ -1072,7 +1111,7 @@ var qna_default = router6;
 // server/index.ts
 dotenv2.config();
 var __filename = fileURLToPath(import.meta.url);
-var __dirname = path2.dirname(__filename);
+var __dirname = path3.dirname(__filename);
 var app = express();
 var PORT = Number(process.env.PORT) || 3001;
 app.use(cors());
@@ -1083,11 +1122,11 @@ app.use("/api/admin", admin_default);
 app.use("/api/media", upload_default);
 app.use("/api/faq", faq_default);
 app.use("/api/qna", qna_default);
-app.use("/uploads", express.static(path2.join(process.cwd(), "uploads")));
-var distPath = path2.join(process.cwd(), "dist");
+app.use("/uploads", express.static(path3.join(process.cwd(), "uploads")));
+var distPath = path3.join(process.cwd(), "dist");
 app.use(express.static(distPath));
 app.get(/^\/(?!api).*/, (_req, res) => {
-  res.sendFile(path2.join(distPath, "index.html"));
+  res.sendFile(path3.join(distPath, "index.html"));
 });
 async function start() {
   app.listen(PORT, () => {

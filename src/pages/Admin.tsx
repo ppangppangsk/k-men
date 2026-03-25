@@ -48,6 +48,8 @@ function PostForm({
   const [selectedType, setSelectedType] = useState<'news' | 'event'>(
     editingPost?.type === 'event' ? 'event' : 'news',
   );
+  const [fileUrl, setFileUrl] = useState(editingPost?.file_url ?? '');
+  const [fileUploading, setFileUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const fixedTypes = ['press_release', 'notice', 'document'] as const;
@@ -73,6 +75,7 @@ function PostForm({
           image_url: imageUrl || undefined,
           event_date: actualType === 'event' ? eventDate || undefined : undefined,
           summary: postType === 'document' ? summary || undefined : undefined,
+          file_url: fileUrl || undefined,
         });
       } else {
         saved = await api.createPost({
@@ -82,6 +85,7 @@ function PostForm({
           image_url: imageUrl || undefined,
           event_date: actualType === 'event' ? eventDate || undefined : undefined,
           summary: postType === 'document' ? summary || undefined : undefined,
+          file_url: fileUrl || undefined,
         });
       }
       onSave(saved);
@@ -177,6 +181,35 @@ function PostForm({
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-kmen-orange bg-white resize-y"
           />
         )}
+
+        {/* PDF 첨부 */}
+        <div>
+          <label className="block text-xs font-medium text-slate-500 mb-1">PDF 첨부 (선택)</label>
+          <div className="flex items-center gap-3">
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setFileUploading(true);
+                try {
+                  const result = await api.uploadPostFile(file);
+                  setFileUrl(result.url);
+                } catch (err) {
+                  alert(err instanceof Error ? err.message : '파일 업로드 실패');
+                } finally {
+                  setFileUploading(false);
+                }
+              }}
+              className="text-sm"
+            />
+            {fileUploading && <span className="text-xs text-slate-400">업로드 중...</span>}
+            {fileUrl && !fileUploading && (
+              <span className="text-xs text-green-600">첨부 완료</span>
+            )}
+          </div>
+        </div>
 
         <RichTextEditor
           content={content}

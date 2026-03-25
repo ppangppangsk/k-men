@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Calendar, User, FileDown } from 'lucide-react';
 import type { Post } from '../types';
 import { api } from '../lib/api';
 
@@ -75,6 +75,18 @@ export default function NewsDetail() {
             className="prose prose-slate max-w-none prose-headings:font-bold"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+          {post.file_url && (
+            <div className="mt-10 pt-8 border-t border-slate-200">
+              <a
+                href={post.file_url}
+                download
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm font-medium transition-colors"
+              >
+                <FileDown className="w-4 h-4" />
+                첨부 파일 다운로드
+              </a>
+            </div>
+          )}
         </motion.article>
       </div>
     </section>

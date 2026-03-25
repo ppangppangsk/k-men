@@ -19,6 +19,8 @@ export default function DashboardNewPost() {
   const [type, setType] = useState<'news' | 'event' | 'member_activity'>('news');
   const [eventDate, setEventDate] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
+  const [fileUploading, setFileUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [contentReady, setContentReady] = useState(!editId);
@@ -36,6 +38,7 @@ export default function DashboardNewPost() {
         setType(post.type as 'news' | 'event' | 'member_activity');
         setEventDate(post.event_date || '');
         setImageUrl(post.image_url || '');
+        setFileUrl(post.file_url || '');
         setContentReady(true);
       }).catch(() => {
         navigate('/dashboard');
@@ -55,6 +58,7 @@ export default function DashboardNewPost() {
         type,
         event_date: type === 'event' ? eventDate || undefined : undefined,
         image_url: imageUrl || undefined,
+        file_url: fileUrl || undefined,
       };
 
       if (editId) {
@@ -169,6 +173,32 @@ export default function DashboardNewPost() {
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-kmen-orange focus:border-kmen-orange transition-colors outline-none"
                 placeholder="https://example.com/image.jpg"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">PDF 첨부 (선택)</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setFileUploading(true);
+                    try {
+                      const result = await api.uploadPostFile(file);
+                      setFileUrl(result.url);
+                    } catch (err) {
+                      alert(err instanceof Error ? err.message : '파일 업로드 실패');
+                    } finally {
+                      setFileUploading(false);
+                    }
+                  }}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm"
+                />
+                {fileUploading && <span className="text-xs text-slate-400 whitespace-nowrap">업로드 중...</span>}
+                {fileUrl && !fileUploading && <span className="text-xs text-green-600 whitespace-nowrap">첨부 완료</span>}
+              </div>
             </div>
 
             <div>

@@ -66,6 +66,13 @@ export async function initDB() {
       // 이미 존재하면 무시
     }
 
+    // posts에 file_url 컬럼 추가
+    try {
+      await conn.execute(`ALTER TABLE posts ADD COLUMN file_url VARCHAR(500) NULL AFTER image_url`);
+    } catch {
+      // 이미 존재하면 무시
+    }
+
     await conn.execute(`
       CREATE TABLE IF NOT EXISTS faqs (
         id INT AUTO_INCREMENT PRIMARY KEY,

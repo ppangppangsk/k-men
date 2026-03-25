@@ -17,6 +17,7 @@ export interface Post {
   org_name?: string;
   event_date?: string;
   image_url?: string;
+  file_url?: string;
   published: boolean;
   created_at: string;
   updated_at: string;
