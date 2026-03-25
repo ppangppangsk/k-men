@@ -45,6 +45,7 @@ export default function RichTextEditor({
         heading: { levels: [2, 3] },
       }),
       ImageExt.configure({
+        allowBase64: true,
         HTMLAttributes: { style: 'max-width:100%;border-radius:0.5rem;margin:1rem 0' },
       }),
       LinkExt.configure({
@@ -69,10 +70,14 @@ export default function RichTextEditor({
       const file = e.target.files?.[0];
       if (!file || !onImageUpload || !editor) return;
 
+      const widthChoice = prompt('이미지 너비를 선택하세요 (%, 예: 100, 75, 50):', '100');
+      if (widthChoice === null) return;
+      const width = Math.min(100, Math.max(10, Number(widthChoice) || 100));
+
       setImageUploading(true);
       try {
         const url = await onImageUpload(file);
-        editor.chain().focus('end').setImage({ src: url }).run();
+        editor.chain().focus('end').setImage({ src: url, ...(width < 100 ? { width: `${width}%` } as any : {}) }).run();
       } catch (err) {
         alert(err instanceof Error ? err.message : '이미지 업로드 실패');
       } finally {
@@ -267,7 +272,13 @@ export default function RichTextEditor({
           height: 0;
         }
         .tiptap:focus { outline: none; }
-        .tiptap img { max-width: 100%; border-radius: 0.5rem; margin: 1rem 0; }
+        .tiptap img { max-width: 100%; border-radius: 0.5rem; margin: 1rem 0; cursor: pointer; }
+        .tiptap img[src=""], .tiptap img:not([src]), .tiptap img[src*="undefined"] {
+          display: block; min-height: 60px; min-width: 200px;
+          background: #fee2e2; border: 2px dashed #f87171; border-radius: 0.5rem;
+          position: relative;
+        }
+        .tiptap img.ProseMirror-selectednode { outline: 2px solid #E8882F; outline-offset: 2px; }
         .tiptap h2 { font-size: 1.5rem; margin: 1.5rem 0 0.75rem; }
         .tiptap h3 { font-size: 1.25rem; margin: 1.25rem 0 0.5rem; }
         .tiptap blockquote {

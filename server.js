@@ -461,8 +461,15 @@ var pdfUpload = multer({
     filename: (_req, file, cb) => {
       const decoded = Buffer.from(file.originalname, "latin1").toString("utf8");
       const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
-      const name = `${Date.now()}-${safeName}`;
-      cb(null, name);
+      const ext = path.extname(safeName);
+      const base = safeName.slice(0, -ext.length || void 0);
+      let finalName = safeName;
+      let counter = 1;
+      while (fs.existsSync(path.join(uploadDir, finalName))) {
+        finalName = `${base}_(${counter})${ext}`;
+        counter++;
+      }
+      cb(null, finalName);
     }
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -721,8 +728,15 @@ var storage = multer2.diskStorage({
   filename: (_req, file, cb) => {
     const decoded = Buffer.from(file.originalname, "latin1").toString("utf8");
     const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
-    const name = `${Date.now()}-${safeName}`;
-    cb(null, name);
+    const ext = path2.extname(safeName);
+    const base = safeName.slice(0, -ext.length || void 0);
+    let finalName = safeName;
+    let counter = 1;
+    while (fs2.existsSync(path2.join(uploadDir2, finalName))) {
+      finalName = `${base}_(${counter})${ext}`;
+      counter++;
+    }
+    cb(null, finalName);
   }
 });
 var upload = multer2({
