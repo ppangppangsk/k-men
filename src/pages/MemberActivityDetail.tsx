@@ -53,7 +53,7 @@ export default function MemberActivityDetail() {
 
           <header className="mb-10">
             <span className="inline-block px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-medium mb-4">
-              회원사 활동
+              회원 기관 활동
             </span>
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-4 break-keep">
               {post.title}

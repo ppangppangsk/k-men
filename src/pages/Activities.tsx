@@ -52,7 +52,7 @@ export default function Activities() {
           >
             <SectionTitle
               title="활동"
-              subtitle="K-MEN의 주요 활동과 회원사 활동을 확인하세요."
+              subtitle="K-MEN의 주요 활동과 회원 기관 활동을 확인하세요."
               center={false}
             />
 
@@ -60,7 +60,7 @@ export default function Activities() {
             <div className="flex gap-2 mt-6 overflow-x-auto">
               {([
                 { key: 'main' as Tab, label: '주요 활동' },
-                { key: 'member' as Tab, label: '회원사 활동' },
+                { key: 'member' as Tab, label: '회원 기관 활동' },
               ]).map((t) => (
                 <button
                   key={t.key}
@@ -123,7 +123,7 @@ export default function Activities() {
             loading ? (
               <div className="text-center py-20 text-slate-400">불러오는 중...</div>
             ) : memberActivities.length === 0 ? (
-              <div className="text-center py-20 text-slate-400">등록된 회원사 활동이 없습니다.</div>
+              <div className="text-center py-20 text-slate-400">등록된 회원 기관 활동이 없습니다.</div>
             ) : (
               <div className="space-y-6">
                 {memberActivities.map((post, i) => (
@@ -140,7 +140,7 @@ export default function Activities() {
                     />
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
-                        회원사 활동
+                        회원 기관 활동
                       </span>
                       <span className="text-xs text-slate-400">
                         {new Date(post.created_at).toLocaleDateString('ko-KR')}

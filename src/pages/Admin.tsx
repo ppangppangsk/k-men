@@ -629,7 +629,7 @@ export default function Admin() {
       case 'event': return { label: '행사', cls: 'bg-amber-100 text-amber-700' };
       case 'notice': return { label: '공지', cls: 'bg-green-100 text-green-700' };
       case 'document': return { label: '문서', cls: 'bg-slate-100 text-slate-600' };
-      case 'member_activity': return { label: '회원사 활동', cls: 'bg-teal-100 text-teal-700' };
+      case 'member_activity': return { label: '회원 기관 활동', cls: 'bg-teal-100 text-teal-700' };
       default: return { label: '보도자료', cls: 'bg-orange-100 text-kmen-orange' };
     }
   };

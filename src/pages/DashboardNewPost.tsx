@@ -136,7 +136,7 @@ export default function DashboardNewPost() {
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
-                  회원사 활동
+                  회원 기관 활동
                 </button>
               </div>
             </div>

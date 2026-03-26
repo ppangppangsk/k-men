@@ -94,7 +94,7 @@ export default function Dashboard() {
                                 : 'bg-amber-100 text-amber-700'
                           }`}
                         >
-                          {post.type === 'news' ? '소식' : post.type === 'member_activity' ? '회원사 활동' : '행사'}
+                          {post.type === 'news' ? '소식' : post.type === 'member_activity' ? '회원 기관 활동' : '행사'}
                         </span>
                         <span className="text-xs text-slate-400">
                           {new Date(post.created_at).toLocaleDateString('ko-KR')}
