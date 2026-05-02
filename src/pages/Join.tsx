@@ -11,6 +11,33 @@ const stepColors = [
   { bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' },
 ];
 
+function renderLineWithLinks(line: string) {
+  const parts = line.split(/(https?:\/\/\S+|[\w.+-]+@[\w-]+\.[\w.-]+)/g);
+  return parts.map((part, i) => {
+    if (/^https?:\/\//.test(part)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-kmen-orange underline break-all"
+        >
+          {part}
+        </a>
+      );
+    }
+    if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(part)) {
+      return (
+        <a key={i} href={`mailto:${part}`} className="text-kmen-orange underline break-all">
+          {part}
+        </a>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export default function Join() {
   const { join } = siteContent;
 
@@ -52,7 +79,15 @@ export default function Join() {
                       </div>
                       <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
                     </div>
-                    <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
+                    {'lines' in step && step.lines ? (
+                      <div className="space-y-2 text-slate-600 leading-relaxed break-keep">
+                        {step.lines.map((line, i) => (
+                          <p key={i}>{renderLineWithLinks(line)}</p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
+                    )}
                   </Card>
                 </motion.div>
               );

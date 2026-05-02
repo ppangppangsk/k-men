@@ -78,8 +78,12 @@ export const siteContent = {
       },
       {
         title: '가입 절차',
-        content:
-          '이메일(koreamenengagenetwork@gmail.com)로 단체 소개와 함께 가입 의사를 전달해주시면, K-MEN 대표자 연석회의 검토 후 승인 절차가 진행됩니다.',
+        lines: [
+          '🪻가입 및 문의: 위 내용에 동의하는 단체는 링크를 통해 가입하실 수 있습니다. 문의는 이메일과 오픈 채팅을 이용해주세요.',
+          '🪻MenEngage Alliance 가입사이트 주소: https://menengage.glueup.com/membership/26448/apply/application-details/',
+          '🪻이메일 koreamenengagenetwork@gmail.com',
+          '🪻오픈채팅 https://open.kakao.com/o/g6G41tmh',
+        ],
       },
       {
         title: '회원 혜택',
