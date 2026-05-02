@@ -85,8 +85,6 @@ export const siteContent = {
             label: '가입',
             href: 'https://menengage.glueup.com/membership/26448/apply/application-details/',
           },
-          '이메일 koreamenengagenetwork@gmail.com',
-          '오픈채팅 https://open.kakao.com/o/g6G41tmh',
         ],
       },
       {

@@ -1,8 +1,7 @@
 import { motion } from 'motion/react';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Mail, MessageCircle } from 'lucide-react';
 import SectionTitle from '../components/ui/SectionTitle';
 import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
 import { siteContent } from '../data/siteContent';
 
 const stepColors = [
@@ -127,10 +126,24 @@ export default function Join() {
                 </li>
               ))}
             </ul>
-            <Button to="/contact" variant="primary" size="lg">
-              문의하기
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="mailto:koreamenengagenetwork@gmail.com"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
+              >
+                <Mail className="w-5 h-5" />
+                이메일 koreamenengagenetwork@gmail.com
+              </a>
+              <a
+                href="https://open.kakao.com/o/g6G41tmh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-kmen-green text-white font-semibold hover:bg-kmen-green/90 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                오픈채팅
+              </a>
+            </div>
           </motion.div>
         </div>
       </section>
