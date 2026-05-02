@@ -80,10 +80,23 @@ export default function Join() {
                       <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
                     </div>
                     {'lines' in step && step.lines ? (
-                      <div className="space-y-2 text-slate-600 leading-relaxed break-keep">
-                        {step.lines.map((line, i) => (
-                          <p key={i}>{renderLineWithLinks(line)}</p>
-                        ))}
+                      <div className="space-y-3 text-slate-600 leading-relaxed break-keep">
+                        {step.lines.map((line, i) =>
+                          typeof line === 'string' ? (
+                            <p key={i}>{renderLineWithLinks(line)}</p>
+                          ) : (
+                            <a
+                              key={i}
+                              href={line.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
+                            >
+                              {line.label}
+                              <ArrowRight className="w-4 h-4" />
+                            </a>
+                          )
+                        )}
                       </div>
                     ) : (
                       <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
