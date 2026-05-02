@@ -85,26 +85,26 @@ export default function Join() {
                           if (typeof line === 'string') {
                             return <p key={i}>{renderLineWithLinks(line)}</p>;
                           }
-                          if (line.href.startsWith('http')) {
-                            return (
-                              <a
-                                key={i}
-                                href={line.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
-                              >
-                                {line.label}
-                                <ArrowRight className="w-4 h-4" />
-                              </a>
-                            );
-                          }
+                          const isExternal = line.href.startsWith('http');
                           return (
                             <div key={i}>
-                              <Button to={line.href} variant="primary" size="md">
-                                {line.label}
-                                <ArrowRight className="w-4 h-4" />
-                              </Button>
+                              {isExternal ? (
+                                <Button
+                                  href={line.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  variant="primary"
+                                  size="md"
+                                >
+                                  {line.label}
+                                  <ArrowRight className="w-4 h-4" />
+                                </Button>
+                              ) : (
+                                <Button to={line.href} variant="primary" size="md">
+                                  {line.label}
+                                  <ArrowRight className="w-4 h-4" />
+                                </Button>
+                              )}
                             </div>
                           );
                         })}
