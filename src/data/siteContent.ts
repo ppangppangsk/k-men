@@ -85,6 +85,11 @@ export const siteContent = {
             label: '가입',
             href: 'https://menengage.glueup.com/membership/26448/apply/application-details/',
           },
+          {
+            type: 'button',
+            label: '문의하기',
+            href: '/contact',
+          },
         ],
       },
       {

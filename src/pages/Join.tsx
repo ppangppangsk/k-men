@@ -1,7 +1,8 @@
 import { motion } from 'motion/react';
-import { ArrowRight, CheckCircle, Mail, MessageCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import SectionTitle from '../components/ui/SectionTitle';
 import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
 import { siteContent } from '../data/siteContent';
 
 const stepColors = [
@@ -80,22 +81,33 @@ export default function Join() {
                     </div>
                     {'lines' in step && step.lines ? (
                       <div className="space-y-3 text-slate-600 leading-relaxed break-keep">
-                        {step.lines.map((line, i) =>
-                          typeof line === 'string' ? (
-                            <p key={i}>{renderLineWithLinks(line)}</p>
-                          ) : (
-                            <a
-                              key={i}
-                              href={line.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
-                            >
-                              {line.label}
-                              <ArrowRight className="w-4 h-4" />
-                            </a>
-                          )
-                        )}
+                        {step.lines.map((line, i) => {
+                          if (typeof line === 'string') {
+                            return <p key={i}>{renderLineWithLinks(line)}</p>;
+                          }
+                          if (line.href.startsWith('http')) {
+                            return (
+                              <a
+                                key={i}
+                                href={line.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
+                              >
+                                {line.label}
+                                <ArrowRight className="w-4 h-4" />
+                              </a>
+                            );
+                          }
+                          return (
+                            <div key={i}>
+                              <Button to={line.href} variant="primary" size="md">
+                                {line.label}
+                                <ArrowRight className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-slate-600 leading-relaxed break-keep">{step.content}</p>
@@ -113,7 +125,7 @@ export default function Join() {
             className="bg-kmen-cream rounded-[2rem] p-10 md:p-14"
           >
             <h3 className="text-2xl font-bold text-slate-900 mb-6">회원 단체가 되면</h3>
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-4">
               {[
                 'K-MEN 네트워크 행사 및 세미나 참여',
                 'MenEngage Alliance 글로벌 네트워크 연결',
@@ -126,24 +138,6 @@ export default function Join() {
                 </li>
               ))}
             </ul>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="mailto:koreamenengagenetwork@gmail.com"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-kmen-orange text-white font-semibold hover:bg-kmen-orange/90 transition-colors"
-              >
-                <Mail className="w-5 h-5" />
-                이메일 koreamenengagenetwork@gmail.com
-              </a>
-              <a
-                href="https://open.kakao.com/o/g6G41tmh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-kmen-green text-white font-semibold hover:bg-kmen-green/90 transition-colors"
-              >
-                <MessageCircle className="w-5 h-5" />
-                오픈채팅
-              </a>
-            </div>
           </motion.div>
         </div>
       </section>
