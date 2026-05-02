@@ -87,7 +87,7 @@ export const siteContent = {
           },
           {
             type: 'button',
-            label: '문의하기',
+            label: '문의',
             href: '/contact',
           },
         ],
