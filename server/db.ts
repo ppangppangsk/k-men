@@ -139,8 +139,11 @@ export async function initDB() {
           "SELECT id FROM posts WHERE type = 'press_release' LIMIT 1"
         );
         if (pressRows.length === 0) {
-          const seedPosts: { title: string; content: string }[] = [
+          // date: 실제 행사 날짜. 보도자료 목록이 created_at 순으로 정렬되므로
+          // 삽입 시점에 한 번만 지정한다(이후 관리자가 수정한 날짜를 덮어쓰지 않음).
+          const seedPosts: { title: string; content: string; date: string }[] = [
             {
+              date: '2025-09-01 00:00:00',
               title: "K-MEN, 성평등주간에 함께하는 '소년과 남성의 날' 선포",
               content: [
                 `<p><strong>— 성평등 사회를 향한 소년과 남성의 새로운 동행 —</strong></p>`,
@@ -166,6 +169,7 @@ export async function initDB() {
               ].join('\n'),
             },
             {
+              date: '2025-09-01 01:00:00',
               title: "[GOMA] 성평등주간에 함께하는 '소년과 남성의 날' 기념 특강",
               content: [
                 `<p><strong>주제:</strong> 남성과 함께하는 성평등정책의 원칙과 방향 살펴보기 — 독일, 호주, 노르웨이 사례를 통해 남성들이 겪는 도전과제와 쟁점, 정책적 대안을 모색하다.</p>`,
@@ -180,6 +184,7 @@ export async function initDB() {
               ].join('\n'),
             },
             {
+              date: '2025-09-01 02:00:00',
               title: "[봄돌] 성평등에 함께하는 '소년과 남성의 날' 온라인 리트릿(Retreat)",
               content: [
                 `<p><strong>주제:</strong> 『나의 진짜 목소리를 찾아서』</p>`,
@@ -204,6 +209,7 @@ export async function initDB() {
               ].join('\n'),
             },
             {
+              date: '2025-09-01 03:00:00',
               title: "[창원여성살림공동체] '소년과 남성의 날' 기념 성평등 캠페인 — 경상남도 고성군",
               content: [
                 `<p><strong>주제:</strong> '평등으로 만드는 아름다움, 전환의 남성성'</p>`,
@@ -217,6 +223,7 @@ export async function initDB() {
               ].join('\n'),
             },
             {
+              date: '2025-09-01 04:00:00',
               title: "[성평등위야] 디지털성범죄 예방 콘텐츠 Faker Chaser(페이커 체이서) 제작 발표 및 배포",
               content: [
                 `<p>딥페이크와 관련한 현대 사회의 문제를 배경으로, 한 고등학교에서 벌어지는 긴박한 사건을 통해 집단 심리, 정보 윤리, 그리고 개개인의 선택이 가진 힘을 조명하는 숏츠(shorts) 시리즈 10여편 제작</p>`,
@@ -228,6 +235,7 @@ export async function initDB() {
               ].join('\n'),
             },
             {
+              date: '2025-09-01 05:00:00',
               title: "[젠더교육플랫폼효재] '소년과 남성의 날' 기념 『Boys Don't Cry』 소개 카드뉴스 배포",
               content: [
                 `<p>캐나다의 공익광고 'Boys Don't Cry' 영상을 한국어 자막과 함께 공개하고, 교육 현장에서 활용할 수 있는 카드뉴스 4장 제작·배포. '남자는 울면 안 돼'와 같은 고정관념이 개인과 사회에 끼치는 해로운 영향을 조명합니다.</p>`,
@@ -242,16 +250,17 @@ export async function initDB() {
 
           for (const post of seedPosts) {
             await conn.execute(
-              'INSERT INTO posts (title, content, type, org_id, image_url) VALUES (?, ?, ?, ?, ?)',
-              [post.title, post.content, 'press_release', adminId, null]
+              'INSERT INTO posts (title, content, type, org_id, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+              [post.title, post.content, 'press_release', adminId, null, post.date]
             );
           }
           console.log(`Seeded ${seedPosts.length} press releases`);
         }
 
         // 발족식 보도자료 마이그레이션: 없으면 추가
-      const pressReleasesMigration: { title: string; content: string }[] = [
+      const pressReleasesMigration: { title: string; content: string; date: string }[] = [
         {
+          date: '2025-06-27 00:00:00',
           title: '"다시, 한국 남자 — 전환적 남성성을 말하다" 한국맨엔게이지네트워크(K-MEN) 7월 9일 발족',
           content: [
             `<p>한국 사회에서 남성성에 대한 논의가 새로운 국면을 맞고 있는 지금, 전환적 남성성과 성평등을 실현하기 위한 "한국맨엔게이지네트워크(K-MEN)"가 오는 <strong>7월 9일(수) 오후 7시</strong>, 서울가족플라자 스페이스살림에서 공식 발족식을 연다.</p>`,
@@ -291,6 +300,7 @@ export async function initDB() {
           ].join('\n'),
         },
         {
+          date: '2025-07-10 00:00:00',
           title: 'K-MEN 출범, 성평등 사회를 위한 \'새로운 남성성\' 연대 시작',
           content: [
             `<p><strong>— 남성성과 성평등을 함께 논하다... 다양한 세대의 공감과 실천 다짐 —</strong></p>`,
@@ -329,31 +339,13 @@ export async function initDB() {
         );
         if (existingPr.length === 0) {
           await conn.execute(
-            'INSERT INTO posts (title, content, type, org_id, image_url) VALUES (?, ?, ?, ?, ?)',
-            [pr.title, pr.content, 'press_release', adminId, null]
+            'INSERT INTO posts (title, content, type, org_id, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+            [pr.title, pr.content, 'press_release', adminId, null, pr.date]
           );
           console.log(`Added press release: ${pr.title}`);
         }
       }
       }
-    }
-
-    // 보도자료 날짜 정렬: 실제 행사 날짜로 created_at 수정
-    const dateFixMap: [string, string][] = [
-      ['"다시, 한국 남자 — 전환적 남성성을 말하다"%', '2025-06-27 00:00:00'],
-      ['K-MEN 출범, 성평등 사회를 위한%', '2025-07-10 00:00:00'],
-      ["K-MEN, 성평등주간에 함께하는 '소년과 남성의 날' 선포", '2025-09-01 00:00:00'],
-      ['[GOMA]%', '2025-09-01 01:00:00'],
-      ['[봄돌]%', '2025-09-01 02:00:00'],
-      ['[창원여성살림공동체]%', '2025-09-01 03:00:00'],
-      ['[성평등위야]%', '2025-09-01 04:00:00'],
-      ['[젠더교육플랫폼효재]%', '2025-09-01 05:00:00'],
-    ];
-    for (const [titlePattern, date] of dateFixMap) {
-      await conn.execute(
-        'UPDATE posts SET created_at = ? WHERE title LIKE ? AND type = ?',
-        [date, titlePattern, 'press_release']
-      );
     }
 
     console.log('Database tables initialized');

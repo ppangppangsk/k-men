@@ -126,6 +126,7 @@ async function initDB() {
         if (pressRows.length === 0) {
           const seedPosts = [
             {
+              date: "2025-09-01 00:00:00",
               title: "K-MEN, \uC131\uD3C9\uB4F1\uC8FC\uAC04\uC5D0 \uD568\uAED8\uD558\uB294 '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uC120\uD3EC",
               content: [
                 `<p><strong>\u2014 \uC131\uD3C9\uB4F1 \uC0AC\uD68C\uB97C \uD5A5\uD55C \uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uC0C8\uB85C\uC6B4 \uB3D9\uD589 \u2014</strong></p>`,
@@ -151,6 +152,7 @@ async function initDB() {
               ].join("\n")
             },
             {
+              date: "2025-09-01 01:00:00",
               title: "[GOMA] \uC131\uD3C9\uB4F1\uC8FC\uAC04\uC5D0 \uD568\uAED8\uD558\uB294 '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uAE30\uB150 \uD2B9\uAC15",
               content: [
                 `<p><strong>\uC8FC\uC81C:</strong> \uB0A8\uC131\uACFC \uD568\uAED8\uD558\uB294 \uC131\uD3C9\uB4F1\uC815\uCC45\uC758 \uC6D0\uCE59\uACFC \uBC29\uD5A5 \uC0B4\uD3B4\uBCF4\uAE30 \u2014 \uB3C5\uC77C, \uD638\uC8FC, \uB178\uB974\uC6E8\uC774 \uC0AC\uB840\uB97C \uD1B5\uD574 \uB0A8\uC131\uB4E4\uC774 \uACAA\uB294 \uB3C4\uC804\uACFC\uC81C\uC640 \uC7C1\uC810, \uC815\uCC45\uC801 \uB300\uC548\uC744 \uBAA8\uC0C9\uD558\uB2E4.</p>`,
@@ -165,6 +167,7 @@ async function initDB() {
               ].join("\n")
             },
             {
+              date: "2025-09-01 02:00:00",
               title: "[\uBD04\uB3CC] \uC131\uD3C9\uB4F1\uC5D0 \uD568\uAED8\uD558\uB294 '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uC628\uB77C\uC778 \uB9AC\uD2B8\uB9BF(Retreat)",
               content: [
                 `<p><strong>\uC8FC\uC81C:</strong> \u300E\uB098\uC758 \uC9C4\uC9DC \uBAA9\uC18C\uB9AC\uB97C \uCC3E\uC544\uC11C\u300F</p>`,
@@ -189,6 +192,7 @@ async function initDB() {
               ].join("\n")
             },
             {
+              date: "2025-09-01 03:00:00",
               title: "[\uCC3D\uC6D0\uC5EC\uC131\uC0B4\uB9BC\uACF5\uB3D9\uCCB4] '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uAE30\uB150 \uC131\uD3C9\uB4F1 \uCEA0\uD398\uC778 \u2014 \uACBD\uC0C1\uB0A8\uB3C4 \uACE0\uC131\uAD70",
               content: [
                 `<p><strong>\uC8FC\uC81C:</strong> '\uD3C9\uB4F1\uC73C\uB85C \uB9CC\uB4DC\uB294 \uC544\uB984\uB2E4\uC6C0, \uC804\uD658\uC758 \uB0A8\uC131\uC131'</p>`,
@@ -202,6 +206,7 @@ async function initDB() {
               ].join("\n")
             },
             {
+              date: "2025-09-01 04:00:00",
               title: "[\uC131\uD3C9\uB4F1\uC704\uC57C] \uB514\uC9C0\uD138\uC131\uBC94\uC8C4 \uC608\uBC29 \uCF58\uD150\uCE20 Faker Chaser(\uD398\uC774\uCEE4 \uCCB4\uC774\uC11C) \uC81C\uC791 \uBC1C\uD45C \uBC0F \uBC30\uD3EC",
               content: [
                 `<p>\uB525\uD398\uC774\uD06C\uC640 \uAD00\uB828\uD55C \uD604\uB300 \uC0AC\uD68C\uC758 \uBB38\uC81C\uB97C \uBC30\uACBD\uC73C\uB85C, \uD55C \uACE0\uB4F1\uD559\uAD50\uC5D0\uC11C \uBC8C\uC5B4\uC9C0\uB294 \uAE34\uBC15\uD55C \uC0AC\uAC74\uC744 \uD1B5\uD574 \uC9D1\uB2E8 \uC2EC\uB9AC, \uC815\uBCF4 \uC724\uB9AC, \uADF8\uB9AC\uACE0 \uAC1C\uAC1C\uC778\uC758 \uC120\uD0DD\uC774 \uAC00\uC9C4 \uD798\uC744 \uC870\uBA85\uD558\uB294 \uC20F\uCE20(shorts) \uC2DC\uB9AC\uC988 10\uC5EC\uD3B8 \uC81C\uC791</p>`,
@@ -213,6 +218,7 @@ async function initDB() {
               ].join("\n")
             },
             {
+              date: "2025-09-01 05:00:00",
               title: "[\uC820\uB354\uAD50\uC721\uD50C\uB7AB\uD3FC\uD6A8\uC7AC] '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uAE30\uB150 \u300EBoys Don't Cry\u300F \uC18C\uAC1C \uCE74\uB4DC\uB274\uC2A4 \uBC30\uD3EC",
               content: [
                 `<p>\uCE90\uB098\uB2E4\uC758 \uACF5\uC775\uAD11\uACE0 'Boys Don't Cry' \uC601\uC0C1\uC744 \uD55C\uAD6D\uC5B4 \uC790\uB9C9\uACFC \uD568\uAED8 \uACF5\uAC1C\uD558\uACE0, \uAD50\uC721 \uD604\uC7A5\uC5D0\uC11C \uD65C\uC6A9\uD560 \uC218 \uC788\uB294 \uCE74\uB4DC\uB274\uC2A4 4\uC7A5 \uC81C\uC791\xB7\uBC30\uD3EC. '\uB0A8\uC790\uB294 \uC6B8\uBA74 \uC548 \uB3FC'\uC640 \uAC19\uC740 \uACE0\uC815\uAD00\uB150\uC774 \uAC1C\uC778\uACFC \uC0AC\uD68C\uC5D0 \uB07C\uCE58\uB294 \uD574\uB85C\uC6B4 \uC601\uD5A5\uC744 \uC870\uBA85\uD569\uB2C8\uB2E4.</p>`,
@@ -226,14 +232,15 @@ async function initDB() {
           ];
           for (const post of seedPosts) {
             await conn.execute(
-              "INSERT INTO posts (title, content, type, org_id, image_url) VALUES (?, ?, ?, ?, ?)",
-              [post.title, post.content, "press_release", adminId, null]
+              "INSERT INTO posts (title, content, type, org_id, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+              [post.title, post.content, "press_release", adminId, null, post.date]
             );
           }
           console.log(`Seeded ${seedPosts.length} press releases`);
         }
         const pressReleasesMigration = [
           {
+            date: "2025-06-27 00:00:00",
             title: '"\uB2E4\uC2DC, \uD55C\uAD6D \uB0A8\uC790 \u2014 \uC804\uD658\uC801 \uB0A8\uC131\uC131\uC744 \uB9D0\uD558\uB2E4" \uD55C\uAD6D\uB9E8\uC5D4\uAC8C\uC774\uC9C0\uB124\uD2B8\uC6CC\uD06C(K-MEN) 7\uC6D4 9\uC77C \uBC1C\uC871',
             content: [
               `<p>\uD55C\uAD6D \uC0AC\uD68C\uC5D0\uC11C \uB0A8\uC131\uC131\uC5D0 \uB300\uD55C \uB17C\uC758\uAC00 \uC0C8\uB85C\uC6B4 \uAD6D\uBA74\uC744 \uB9DE\uACE0 \uC788\uB294 \uC9C0\uAE08, \uC804\uD658\uC801 \uB0A8\uC131\uC131\uACFC \uC131\uD3C9\uB4F1\uC744 \uC2E4\uD604\uD558\uAE30 \uC704\uD55C "\uD55C\uAD6D\uB9E8\uC5D4\uAC8C\uC774\uC9C0\uB124\uD2B8\uC6CC\uD06C(K-MEN)"\uAC00 \uC624\uB294 <strong>7\uC6D4 9\uC77C(\uC218) \uC624\uD6C4 7\uC2DC</strong>, \uC11C\uC6B8\uAC00\uC871\uD50C\uB77C\uC790 \uC2A4\uD398\uC774\uC2A4\uC0B4\uB9BC\uC5D0\uC11C \uACF5\uC2DD \uBC1C\uC871\uC2DD\uC744 \uC5F0\uB2E4.</p>`,
@@ -273,6 +280,7 @@ async function initDB() {
             ].join("\n")
           },
           {
+            date: "2025-07-10 00:00:00",
             title: "K-MEN \uCD9C\uBC94, \uC131\uD3C9\uB4F1 \uC0AC\uD68C\uB97C \uC704\uD55C '\uC0C8\uB85C\uC6B4 \uB0A8\uC131\uC131' \uC5F0\uB300 \uC2DC\uC791",
             content: [
               `<p><strong>\u2014 \uB0A8\uC131\uC131\uACFC \uC131\uD3C9\uB4F1\uC744 \uD568\uAED8 \uB17C\uD558\uB2E4... \uB2E4\uC591\uD55C \uC138\uB300\uC758 \uACF5\uAC10\uACFC \uC2E4\uCC9C \uB2E4\uC9D0 \u2014</strong></p>`,
@@ -310,29 +318,13 @@ async function initDB() {
           );
           if (existingPr.length === 0) {
             await conn.execute(
-              "INSERT INTO posts (title, content, type, org_id, image_url) VALUES (?, ?, ?, ?, ?)",
-              [pr.title, pr.content, "press_release", adminId, null]
+              "INSERT INTO posts (title, content, type, org_id, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+              [pr.title, pr.content, "press_release", adminId, null, pr.date]
             );
             console.log(`Added press release: ${pr.title}`);
           }
         }
       }
-    }
-    const dateFixMap = [
-      ['"\uB2E4\uC2DC, \uD55C\uAD6D \uB0A8\uC790 \u2014 \uC804\uD658\uC801 \uB0A8\uC131\uC131\uC744 \uB9D0\uD558\uB2E4"%', "2025-06-27 00:00:00"],
-      ["K-MEN \uCD9C\uBC94, \uC131\uD3C9\uB4F1 \uC0AC\uD68C\uB97C \uC704\uD55C%", "2025-07-10 00:00:00"],
-      ["K-MEN, \uC131\uD3C9\uB4F1\uC8FC\uAC04\uC5D0 \uD568\uAED8\uD558\uB294 '\uC18C\uB144\uACFC \uB0A8\uC131\uC758 \uB0A0' \uC120\uD3EC", "2025-09-01 00:00:00"],
-      ["[GOMA]%", "2025-09-01 01:00:00"],
-      ["[\uBD04\uB3CC]%", "2025-09-01 02:00:00"],
-      ["[\uCC3D\uC6D0\uC5EC\uC131\uC0B4\uB9BC\uACF5\uB3D9\uCCB4]%", "2025-09-01 03:00:00"],
-      ["[\uC131\uD3C9\uB4F1\uC704\uC57C]%", "2025-09-01 04:00:00"],
-      ["[\uC820\uB354\uAD50\uC721\uD50C\uB7AB\uD3FC\uD6A8\uC7AC]%", "2025-09-01 05:00:00"]
-    ];
-    for (const [titlePattern, date] of dateFixMap) {
-      await conn.execute(
-        "UPDATE posts SET created_at = ? WHERE title LIKE ? AND type = ?",
-        [date, titlePattern, "press_release"]
-      );
     }
     console.log("Database tables initialized");
   } finally {
