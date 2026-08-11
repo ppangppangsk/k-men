@@ -4,11 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
+import { uploadsRoot } from '../uploads';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
-
-const uploadsRoot = process.env.NODE_ENV === 'production'
-  ? path.resolve(process.cwd(), '..', 'kmen-uploads')
-  : path.join(process.cwd(), 'uploads');
 
 const mediaDir = path.join(uploadsRoot, 'media');
 if (!fs.existsSync(mediaDir)) {

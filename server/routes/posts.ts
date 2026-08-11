@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
+import { uploadsRoot } from '../uploads';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = Router();
@@ -12,10 +13,8 @@ const router = Router();
 const VALID_POST_TYPES = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
 const ADMIN_ONLY_POST_TYPES = ['press_release', 'notice', 'document'];
 
-// 업로드 루트 디렉토리
-const uploadsRoot = process.env.NODE_ENV === 'production'
-  ? path.resolve(process.cwd(), '..', 'kmen-uploads')
-  : path.join(process.cwd(), 'uploads');
+// 업로드 루트는 server/uploads.ts 한 곳에서만 결정한다.
+// (예전에는 posts/upload/index 세 곳에 같은 식이 복사돼 있어 서로 어긋날 수 있었다)
 
 const validPostTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
 

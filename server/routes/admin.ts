@@ -1,12 +1,25 @@
 import { Router, type Response } from 'express';
 import pool from '../db';
 import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
+import { inspectUploads } from '../uploads';
 import type { RowDataPacket } from 'mysql2';
 
 const router = Router();
 
 // 모든 관리자 라우트에 인증 + 관리자 권한 필요
 router.use(authMiddleware, adminMiddleware);
+
+// 업로드 저장소 진단
+// 서버에 직접 접속하지 않고도 파일이 실제로 어디에 저장되는지 확인하기 위한 용도.
+// GET /api/admin/uploads-info
+router.get('/uploads-info', (_req: AuthRequest, res: Response) => {
+  try {
+    res.json(inspectUploads());
+  } catch (err) {
+    console.error('Uploads info error:', err);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  }
+});
 
 // 전체 단체 목록
 router.get('/organizations', async (_req: AuthRequest, res: Response) => {

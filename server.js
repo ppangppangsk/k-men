@@ -1,9 +1,9 @@
 // server/index.ts
 import express from "express";
 import cors from "cors";
-import path3 from "path";
+import path4 from "path";
 import { fileURLToPath } from "url";
-import dotenv2 from "dotenv";
+import dotenv3 from "dotenv";
 
 // server/db.ts
 import mysql from "mysql2/promise";
@@ -338,6 +338,75 @@ async function initDB() {
 }
 var db_default = pool;
 
+// server/uploads.ts
+import path from "path";
+import fs from "fs";
+import dotenv2 from "dotenv";
+dotenv2.config();
+function resolveUploadsRoot() {
+  const explicit = process.env.UPLOADS_DIR?.trim();
+  if (explicit) return path.resolve(explicit);
+  return process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
+}
+var uploadsRoot = resolveUploadsRoot();
+function rootSource() {
+  if (process.env.UPLOADS_DIR?.trim()) return "UPLOADS_DIR";
+  return process.env.NODE_ENV === "production" ? "NODE_ENV=production \uAE30\uBCF8\uAC12" : "\uAC1C\uBC1C \uAE30\uBCF8\uAC12";
+}
+function inspectUploads() {
+  const exists = fs.existsSync(uploadsRoot);
+  let writable = false;
+  if (exists) {
+    try {
+      fs.accessSync(uploadsRoot, fs.constants.W_OK);
+      writable = true;
+    } catch {
+      writable = false;
+    }
+  }
+  const subdirs = [];
+  if (exists) {
+    try {
+      for (const entry of fs.readdirSync(uploadsRoot, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        const dir = path.join(uploadsRoot, entry.name);
+        let files = [];
+        try {
+          files = fs.readdirSync(dir, { withFileTypes: true }).filter((f) => f.isFile()).map((f) => f.name);
+        } catch {
+        }
+        subdirs.push({ name: entry.name, fileCount: files.length, sample: files.slice(0, 5) });
+      }
+    } catch {
+    }
+  }
+  return {
+    resolvedRoot: uploadsRoot,
+    source: rootSource(),
+    nodeEnv: process.env.NODE_ENV ?? null,
+    uploadsDirEnv: process.env.UPLOADS_DIR?.trim() || null,
+    cwd: process.cwd(),
+    exists,
+    writable,
+    totalFiles: subdirs.reduce((sum, d) => sum + d.fileCount, 0),
+    subdirs
+  };
+}
+function logUploadsInfo() {
+  const info = inspectUploads();
+  console.log(
+    `[uploads] root=${info.resolvedRoot} (source=${info.source}, NODE_ENV=${info.nodeEnv ?? "\uBBF8\uC124\uC815"}, cwd=${info.cwd})`
+  );
+  console.log(
+    `[uploads] exists=${info.exists} writable=${info.writable} files=${info.totalFiles}` + (info.subdirs.length ? ` [${info.subdirs.map((d) => `${d.name}:${d.fileCount}`).join(", ")}]` : "")
+  );
+  if (!info.exists) {
+    console.warn("[uploads] \uACBD\uACE0: \uC5C5\uB85C\uB4DC \uB514\uB809\uD1A0\uB9AC\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC5C5\uB85C\uB4DC\uB41C \uD30C\uC77C\uC744 \uC11C\uBE59\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.");
+  } else if (!info.writable) {
+    console.warn("[uploads] \uACBD\uACE0: \uC5C5\uB85C\uB4DC \uB514\uB809\uD1A0\uB9AC\uC5D0 \uC4F0\uAE30 \uAD8C\uD55C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.");
+  }
+}
+
 // server/routes/auth.ts
 import { Router } from "express";
 import bcrypt2 from "bcryptjs";
@@ -445,29 +514,28 @@ var auth_default = router;
 // server/routes/posts.ts
 import { Router as Router2 } from "express";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import path2 from "path";
+import fs2 from "fs";
 var router2 = Router2();
 var VALID_POST_TYPES = ["news", "event", "press_release", "notice", "document", "member_activity"];
 var ADMIN_ONLY_POST_TYPES = ["press_release", "notice", "document"];
-var uploadsRoot = process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
 var validPostTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
 function getUploadDir(postType) {
   const subdir = validPostTypes.includes(postType || "") ? postType : "general";
-  const dir = path.join(uploadsRoot, subdir);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const dir = path2.join(uploadsRoot, subdir);
+  if (!fs2.existsSync(dir)) {
+    fs2.mkdirSync(dir, { recursive: true });
   }
   return dir;
 }
 function uniqueFilename(dir, originalName) {
   const decoded = Buffer.from(originalName, "latin1").toString("utf8");
   const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
-  const ext = path.extname(safeName);
+  const ext = path2.extname(safeName);
   const base = safeName.slice(0, -ext.length || void 0);
   let finalName = safeName;
   let counter = 1;
-  while (fs.existsSync(path.join(dir, finalName))) {
+  while (fs2.existsSync(path2.join(dir, finalName))) {
     finalName = `${base}_(${counter})${ext}`;
     counter++;
   }
@@ -501,7 +569,7 @@ router2.post("/upload", authMiddleware, postFileUpload.single("file"), async (re
     res.status(400).json({ error: "\uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4." });
     return;
   }
-  const relDir = path.relative(uploadsRoot, path.dirname(req.file.path));
+  const relDir = path2.relative(uploadsRoot, path2.dirname(req.file.path));
   res.json({
     url: `/uploads/${relDir}/${req.file.filename}`,
     original_name: req.file.originalname
@@ -681,6 +749,14 @@ var posts_default = router2;
 import { Router as Router3 } from "express";
 var router3 = Router3();
 router3.use(authMiddleware, adminMiddleware);
+router3.get("/uploads-info", (_req, res) => {
+  try {
+    res.json(inspectUploads());
+  } catch (err) {
+    console.error("Uploads info error:", err);
+    res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4." });
+  }
+});
 router3.get("/organizations", async (_req, res) => {
   try {
     const [rows] = await db_default.execute(
@@ -767,23 +843,22 @@ var admin_default = router3;
 // server/routes/upload.ts
 import { Router as Router4 } from "express";
 import multer2 from "multer";
-import path2 from "path";
-import fs2 from "fs";
-var uploadsRoot2 = process.env.NODE_ENV === "production" ? path2.resolve(process.cwd(), "..", "kmen-uploads") : path2.join(process.cwd(), "uploads");
-var mediaDir = path2.join(uploadsRoot2, "media");
-if (!fs2.existsSync(mediaDir)) {
-  fs2.mkdirSync(mediaDir, { recursive: true });
+import path3 from "path";
+import fs3 from "fs";
+var mediaDir = path3.join(uploadsRoot, "media");
+if (!fs3.existsSync(mediaDir)) {
+  fs3.mkdirSync(mediaDir, { recursive: true });
 }
 var storage = multer2.diskStorage({
   destination: (_req, _file, cb) => cb(null, mediaDir),
   filename: (_req, file, cb) => {
     const decoded = Buffer.from(file.originalname, "latin1").toString("utf8");
     const safeName = decoded.replace(/[^a-zA-Z0-9가-힣._-]/g, "_");
-    const ext = path2.extname(safeName);
+    const ext = path3.extname(safeName);
     const base = safeName.slice(0, -ext.length || void 0);
     let finalName = safeName;
     let counter = 1;
-    while (fs2.existsSync(path2.join(mediaDir, finalName))) {
+    while (fs3.existsSync(path3.join(mediaDir, finalName))) {
       finalName = `${base}_(${counter})${ext}`;
       counter++;
     }
@@ -907,9 +982,9 @@ router4.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
       res.status(404).json({ error: "\uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." });
       return;
     }
-    const filePath = path2.join(mediaDir, rows[0].filename);
-    if (fs2.existsSync(filePath)) {
-      fs2.unlinkSync(filePath);
+    const filePath = path3.join(mediaDir, rows[0].filename);
+    if (fs3.existsSync(filePath)) {
+      fs3.unlinkSync(filePath);
     }
     await db_default.execute("DELETE FROM media WHERE id = ?", [req.params.id]);
     res.json({ message: "\uC0AD\uC81C\uB418\uC5C8\uC2B5\uB2C8\uB2E4." });
@@ -1176,9 +1251,9 @@ router6.patch("/:id/answer", authMiddleware, adminMiddleware, async (req, res) =
 var qna_default = router6;
 
 // server/index.ts
-dotenv2.config();
+dotenv3.config();
 var __filename = fileURLToPath(import.meta.url);
-var __dirname = path3.dirname(__filename);
+var __dirname = path4.dirname(__filename);
 var app = express();
 var PORT = Number(process.env.PORT) || 3001;
 app.use(cors());
@@ -1189,16 +1264,19 @@ app.use("/api/admin", admin_default);
 app.use("/api/media", upload_default);
 app.use("/api/faq", faq_default);
 app.use("/api/qna", qna_default);
-var uploadsDir = process.env.NODE_ENV === "production" ? path3.resolve(process.cwd(), "..", "kmen-uploads") : path3.join(process.cwd(), "uploads");
-app.use("/uploads", express.static(uploadsDir));
-var distPath = path3.join(process.cwd(), "dist");
+app.use("/uploads", express.static(uploadsRoot));
+app.use("/uploads", (_req, res) => {
+  res.status(404).json({ error: "\uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." });
+});
+var distPath = path4.join(process.cwd(), "dist");
 app.use(express.static(distPath));
 app.get(/^\/(?!api).*/, (_req, res) => {
-  res.sendFile(path3.join(distPath, "index.html"));
+  res.sendFile(path4.join(distPath, "index.html"));
 });
 async function start() {
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    logUploadsInfo();
   });
   try {
     await initDB();
