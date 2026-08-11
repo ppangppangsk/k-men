@@ -38,6 +38,10 @@ app.use('/uploads', express.static(uploadsRoot));
 // 그러면 브라우저와 CDN 이 그 HTML 을 "정상 응답"으로 보고 이미지 URL 에 캐시해버려,
 // 나중에 파일을 복구해도 계속 깨진 채로 남는다. 정직하게 404 를 돌려준다.
 app.use('/uploads', (_req, res) => {
+  // 이 "없음" 응답이 캐시되면, 나중에 같은 이름으로 파일을 올려도 CDN/브라우저가
+  // 한동안 계속 깨진 것으로 응답한다. (업로드 직후 에디터에서 이미지가 깨지는 원인)
+  // 부정 응답은 절대 캐시되지 않게 한다.
+  res.set('Cache-Control', 'no-store');
   res.status(404).json({ error: '파일을 찾을 수 없습니다.' });
 });
 

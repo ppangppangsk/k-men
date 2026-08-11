@@ -1266,6 +1266,7 @@ app.use("/api/faq", faq_default);
 app.use("/api/qna", qna_default);
 app.use("/uploads", express.static(uploadsRoot));
 app.use("/uploads", (_req, res) => {
+  res.set("Cache-Control", "no-store");
   res.status(404).json({ error: "\uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." });
 });
 var distPath = path4.join(process.cwd(), "dist");
