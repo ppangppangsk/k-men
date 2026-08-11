@@ -29,6 +29,32 @@ const categoryIcons: Record<string, typeof Image> = {
 /* ==============================
  *  Post Form (소식/행사/보도자료 공용)
  * ============================== */
+/* ===== 목록 순서 변경 버튼 (위/아래) ===== */
+function OrderButtons({
+  index,
+  total,
+  disabled,
+  onMove,
+}: {
+  index: number;
+  total: number;
+  disabled: boolean;
+  onMove: (dir: -1 | 1) => void;
+}) {
+  const cls =
+    'p-1 text-slate-400 hover:text-kmen-orange transition-colors disabled:opacity-20 disabled:hover:text-slate-400 disabled:cursor-not-allowed';
+  return (
+    <div className="flex flex-col shrink-0">
+      <button onClick={() => onMove(-1)} disabled={disabled || index === 0} className={cls} title="위로">
+        <ChevronUp className="w-4 h-4" />
+      </button>
+      <button onClick={() => onMove(1)} disabled={disabled || index === total - 1} className={cls} title="아래로">
+        <ChevronDown className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 function PostForm({
   postType,
   editingPost,
@@ -352,6 +378,8 @@ export default function Admin() {
   const [editingMember, setEditingMember] = useState<Post | null>(null);
   const [showMemberForm, setShowMemberForm] = useState(false);
 
+  const [reordering, setReordering] = useState(false);
+
   // Press editing
   const [editingPress, setEditingPress] = useState<Post | null>(null);
   const [showPressForm, setShowPressForm] = useState(false);
@@ -634,7 +662,48 @@ export default function Admin() {
   if (!isAuthenticated || !isAdmin) return null;
 
   const pendingCount = orgs.filter((o) => !o.approved).length;
-  const memberActivities = posts.filter((p) => p.type === 'member_activity');
+
+  // 서버와 같은 규칙: sort_order 가 큰 글이 위, 동률이면 최신순
+  const bySortOrder = (a: Post, b: Post) =>
+    b.sort_order - a.sort_order ||
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+
+  const newsEventPosts = posts.filter((p) => ['news', 'event'].includes(p.type)).sort(bySortOrder);
+  const memberActivities = posts.filter((p) => p.type === 'member_activity').sort(bySortOrder);
+
+  /* --- 순서 변경 --- */
+  // 목록 전체 순서를 서버로 보내고, 같은 규칙으로 sort_order 를 낙관적으로 다시 매긴다.
+  const movePost = async (
+    list: Post[],
+    index: number,
+    dir: -1 | 1,
+    commit: (renumbered: Post[]) => void,
+  ) => {
+    const target = index + dir;
+    if (reordering || target < 0 || target >= list.length) return;
+
+    const ordered = [...list];
+    [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
+    commit(ordered.map((p, i) => ({ ...p, sort_order: ordered.length - i })));
+
+    setReordering(true);
+    try {
+      await api.admin.reorderPosts(ordered.map((p) => p.id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '순서 변경에 실패했습니다.');
+      loadData(); // 서버 상태로 되돌린다
+    } finally {
+      setReordering(false);
+    }
+  };
+
+  // posts 상태에서 파생된 목록(소식/행사, 회원 기관 활동)은 원본 배열에 sort_order 만 반영한다
+  const commitToPosts = (renumbered: Post[]) => {
+    const orderMap = new Map(renumbered.map((p) => [p.id, p.sort_order]));
+    setPosts((prev) =>
+      prev.map((p) => (orderMap.has(p.id) ? { ...p, sort_order: orderMap.get(p.id)! } : p)),
+    );
+  };
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes}B`;
@@ -797,12 +866,11 @@ export default function Admin() {
 
               {/* Post List */}
               <div className="space-y-3">
-                {posts.filter((p) => ['news', 'event'].includes(p.type)).length === 0 ? (
+                {newsEventPosts.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">게시글이 없습니다.</div>
                 ) : (
-                  posts
-                    .filter((p) => ['news', 'event'].includes(p.type))
-                    .map((post) => {
+                  newsEventPosts
+                    .map((post, i) => {
                       const badge = typeBadge(post.type);
                       return (
                         <div key={post.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
@@ -818,7 +886,13 @@ export default function Admin() {
                             <h3 className="font-semibold text-slate-900 truncate">{post.title}</h3>
                             <p className="text-sm text-slate-500 mt-0.5">작성: {post.org_name}</p>
                           </div>
-                          <div className="flex gap-1 shrink-0">
+                          <div className="flex gap-1 shrink-0 items-center">
+                            <OrderButtons
+                              index={i}
+                              total={newsEventPosts.length}
+                              disabled={reordering}
+                              onMove={(dir) => movePost(newsEventPosts, i, dir, commitToPosts)}
+                            />
                             <button
                               onClick={() => { setEditingPost(post); setShowPostForm(false); }}
                               className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
@@ -867,7 +941,7 @@ export default function Admin() {
                 {memberActivities.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">등록된 회원 기관 활동이 없습니다.</div>
                 ) : (
-                  memberActivities.map((post) => (
+                  memberActivities.map((post, i) => (
                     <div key={post.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -881,7 +955,13 @@ export default function Admin() {
                         <h3 className="font-semibold text-slate-900 truncate">{post.title}</h3>
                         <p className="text-sm text-slate-500 mt-0.5">작성: {post.org_name}</p>
                       </div>
-                      <div className="flex gap-1 shrink-0">
+                      <div className="flex gap-1 shrink-0 items-center">
+                        <OrderButtons
+                          index={i}
+                          total={memberActivities.length}
+                          disabled={reordering}
+                          onMove={(dir) => movePost(memberActivities, i, dir, commitToPosts)}
+                        />
                         <button
                           onClick={() => { setEditingMember(post); setShowMemberForm(false); }}
                           className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
@@ -929,7 +1009,7 @@ export default function Admin() {
                 {pressReleases.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">등록된 보도자료가 없습니다.</div>
                 ) : (
-                  pressReleases.map((pr) => (
+                  pressReleases.map((pr, i) => (
                     <div key={pr.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -942,7 +1022,13 @@ export default function Admin() {
                         </div>
                         <h3 className="font-semibold text-slate-900 truncate">{pr.title}</h3>
                       </div>
-                      <div className="flex gap-1 shrink-0">
+                      <div className="flex gap-1 shrink-0 items-center">
+                        <OrderButtons
+                          index={i}
+                          total={pressReleases.length}
+                          disabled={reordering}
+                          onMove={(dir) => movePost(pressReleases, i, dir, setPressReleases)}
+                        />
                         <button
                           onClick={() => { setEditingPress(pr); setShowPressForm(false); }}
                           className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
@@ -988,7 +1074,7 @@ export default function Admin() {
                 {notices.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">등록된 공지사항이 없습니다.</div>
                 ) : (
-                  notices.map((notice) => (
+                  notices.map((notice, i) => (
                     <div key={notice.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -1001,7 +1087,13 @@ export default function Admin() {
                         </div>
                         <h3 className="font-semibold text-slate-900 truncate">{notice.title}</h3>
                       </div>
-                      <div className="flex gap-1 shrink-0">
+                      <div className="flex gap-1 shrink-0 items-center">
+                        <OrderButtons
+                          index={i}
+                          total={notices.length}
+                          disabled={reordering}
+                          onMove={(dir) => movePost(notices, i, dir, setNotices)}
+                        />
                         <button
                           onClick={() => { setEditingNotice(notice); setShowNoticeForm(false); }}
                           className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
@@ -1047,7 +1139,7 @@ export default function Admin() {
                 {documentPosts.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">등록된 문서 자료가 없습니다.</div>
                 ) : (
-                  documentPosts.map((doc) => (
+                  documentPosts.map((doc, i) => (
                     <div key={doc.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -1063,7 +1155,13 @@ export default function Admin() {
                           <p className="text-sm text-slate-500 mt-1 line-clamp-2">{doc.summary}</p>
                         )}
                       </div>
-                      <div className="flex gap-1 shrink-0">
+                      <div className="flex gap-1 shrink-0 items-center">
+                        <OrderButtons
+                          index={i}
+                          total={documentPosts.length}
+                          disabled={reordering}
+                          onMove={(dir) => movePost(documentPosts, i, dir, setDocumentPosts)}
+                        />
                         <button
                           onClick={() => { setEditingDocument(doc); setShowDocumentForm(false); }}
                           className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"

@@ -47,6 +47,7 @@ async function initDB() {
         event_date DATE NULL,
         image_url VARCHAR(500) NULL,
         published TINYINT DEFAULT 1,
+        sort_order INT NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (org_id) REFERENCES organizations(id)
@@ -62,6 +63,10 @@ async function initDB() {
     }
     try {
       await conn.execute(`ALTER TABLE posts ADD COLUMN file_url VARCHAR(500) NULL AFTER image_url`);
+    } catch {
+    }
+    try {
+      await conn.execute(`ALTER TABLE posts ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER published`);
     } catch {
     }
     await conn.execute(`
@@ -517,7 +522,7 @@ router2.get("/", async (req, res) => {
       query += " AND p.type = ?";
       params.push(type);
     }
-    query += " ORDER BY p.created_at DESC";
+    query += " ORDER BY p.sort_order DESC, p.created_at DESC";
     const [rows] = await db_default.execute(query, params);
     res.json(rows);
   } catch (err) {
@@ -528,7 +533,7 @@ router2.get("/", async (req, res) => {
 router2.get("/my", authMiddleware, async (req, res) => {
   try {
     const [rows] = await db_default.execute(
-      "SELECT * FROM posts WHERE org_id = ? ORDER BY created_at DESC",
+      "SELECT * FROM posts WHERE org_id = ? ORDER BY sort_order DESC, created_at DESC",
       [req.orgId]
     );
     res.json(rows);
@@ -583,6 +588,31 @@ router2.post("/", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error("Create post error:", err);
     res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4." });
+  }
+});
+router2.patch("/reorder", authMiddleware, adminMiddleware, async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0 || !ids.every((id) => Number.isInteger(id))) {
+    res.status(400).json({ error: "ids \uB294 \uAC8C\uC2DC\uAE00 id \uBC30\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4." });
+    return;
+  }
+  const conn = await db_default.getConnection();
+  try {
+    await conn.beginTransaction();
+    for (let i = 0; i < ids.length; i++) {
+      await conn.execute(
+        "UPDATE posts SET sort_order = ?, updated_at = updated_at WHERE id = ?",
+        [ids.length - i, ids[i]]
+      );
+    }
+    await conn.commit();
+    res.json({ message: "\uC21C\uC11C\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4." });
+  } catch (err) {
+    await conn.rollback();
+    console.error("Reorder posts error:", err);
+    res.status(500).json({ error: "\uC11C\uBC84 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4." });
+  } finally {
+    conn.release();
   }
 });
 router2.put("/:id", authMiddleware, async (req, res) => {
@@ -715,7 +745,7 @@ router3.get("/posts", async (_req, res) => {
       `SELECT p.*, o.name as org_name
        FROM posts p
        JOIN organizations o ON p.org_id = o.id
-       ORDER BY p.created_at DESC`
+       ORDER BY p.sort_order DESC, p.created_at DESC`
     );
     res.json(rows);
   } catch (err) {

@@ -117,6 +117,14 @@ export const api = {
         method: 'DELETE',
       });
     },
+
+    // ids 는 화면에 보이는 순서대로(앞이 위) 전달한다.
+    reorderPosts(ids: number[]) {
+      return request<{ message: string }>('/posts/reorder', {
+        method: 'PATCH',
+        body: JSON.stringify({ ids }),
+      });
+    },
   },
 
   // Media

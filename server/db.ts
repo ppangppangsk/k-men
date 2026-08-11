@@ -46,6 +46,7 @@ export async function initDB() {
         event_date DATE NULL,
         image_url VARCHAR(500) NULL,
         published TINYINT DEFAULT 1,
+        sort_order INT NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (org_id) REFERENCES organizations(id)
@@ -69,6 +70,14 @@ export async function initDB() {
     // posts에 file_url 컬럼 추가
     try {
       await conn.execute(`ALTER TABLE posts ADD COLUMN file_url VARCHAR(500) NULL AFTER image_url`);
+    } catch {
+      // 이미 존재하면 무시
+    }
+
+    // posts에 sort_order 컬럼 추가 (수동 정렬용)
+    // 기본값 0 이라 기존 글은 전부 동률 → created_at DESC 순서가 그대로 유지된다.
+    try {
+      await conn.execute(`ALTER TABLE posts ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER published`);
     } catch {
       // 이미 존재하면 무시
     }

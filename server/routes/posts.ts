@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import pool from '../db';
-import { authMiddleware, type AuthRequest } from '../middleware/auth';
+import { authMiddleware, adminMiddleware, type AuthRequest } from '../middleware/auth';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = Router();
@@ -98,7 +98,8 @@ router.get('/', async (req: Request, res: Response) => {
       params.push(type);
     }
 
-    query += ' ORDER BY p.created_at DESC';
+    // sort_order 가 큰 글이 위로. 기본값 0 동률이면 기존처럼 최신순.
+    query += ' ORDER BY p.sort_order DESC, p.created_at DESC';
 
     const [rows] = await pool.execute<RowDataPacket[]>(query, params);
     res.json(rows);
@@ -112,7 +113,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/my', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT * FROM posts WHERE org_id = ? ORDER BY created_at DESC',
+      'SELECT * FROM posts WHERE org_id = ? ORDER BY sort_order DESC, created_at DESC',
       [req.orgId]
     );
     res.json(rows);
@@ -184,6 +185,39 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // 게시글 수정 (본인 글만, admin은 모두 수정 가능)
+// 게시글 순서 변경 (관리자 전용)
+// ids 는 화면에 보이는 순서대로 전달한다(앞이 위). 목록 전체의 sort_order 를 다시 매기므로
+// 기존 글이 전부 0 인 상태에서도 동작한다. '/:id' 라우트보다 먼저 선언해야 한다.
+router.patch('/reorder', authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0 || !ids.every((id) => Number.isInteger(id))) {
+    res.status(400).json({ error: 'ids 는 게시글 id 배열이어야 합니다.' });
+    return;
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    for (let i = 0; i < ids.length; i++) {
+      // updated_at = updated_at 로 명시 지정해 ON UPDATE 자동 갱신을 막는다.
+      // 순서만 바꾼 것을 '글 수정'으로 기록하지 않기 위함이다.
+      await conn.execute(
+        'UPDATE posts SET sort_order = ?, updated_at = updated_at WHERE id = ?',
+        [ids.length - i, ids[i]]
+      );
+    }
+    await conn.commit();
+    res.json({ message: '순서가 변경되었습니다.' });
+  } catch (err) {
+    await conn.rollback();
+    console.error('Reorder posts error:', err);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  } finally {
+    conn.release();
+  }
+});
+
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   const { title, content, type, event_date, image_url, file_url, summary } = req.body;
 

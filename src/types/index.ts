@@ -19,6 +19,7 @@ export interface Post {
   image_url?: string;
   file_url?: string;
   published: boolean;
+  sort_order: number;
   created_at: string;
   updated_at: string;
 }

@@ -87,7 +87,7 @@ router.get('/posts', async (_req: AuthRequest, res: Response) => {
       `SELECT p.*, o.name as org_name
        FROM posts p
        JOIN organizations o ON p.org_id = o.id
-       ORDER BY p.created_at DESC`
+       ORDER BY p.sort_order DESC, p.created_at DESC`
     );
     res.json(rows);
   } catch (err) {
