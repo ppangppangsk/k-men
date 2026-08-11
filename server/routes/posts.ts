@@ -8,6 +8,10 @@ import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = Router();
 
+// 게시글 유형 정책 — 생성(POST)과 수정(PUT)이 갈라지지 않도록 한 곳에서 관리한다.
+const VALID_POST_TYPES = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
+const ADMIN_ONLY_POST_TYPES = ['press_release', 'notice', 'document'];
+
 // 업로드 루트 디렉토리
 const uploadsRoot = process.env.NODE_ENV === 'production'
   ? path.resolve(process.cwd(), '..', 'kmen-uploads')
@@ -150,14 +154,13 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  const validTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
-  if (!validTypes.includes(type)) {
-    res.status(400).json({ error: `유형은 ${validTypes.join(', ')}만 가능합니다.` });
+  if (!VALID_POST_TYPES.includes(type)) {
+    res.status(400).json({ error: `유형은 ${VALID_POST_TYPES.join(', ')}만 가능합니다.` });
     return;
   }
 
-  // notice, document 타입은 관리자 전용
-  if ((type === 'notice' || type === 'document') && req.orgRole !== 'admin') {
+  // press_release, notice, document 타입은 관리자 전용
+  if (ADMIN_ONLY_POST_TYPES.includes(type) && req.orgRole !== 'admin') {
     res.status(403).json({ error: '관리자만 작성할 수 있는 유형입니다.' });
     return;
   }
@@ -185,14 +188,13 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   const { title, content, type, event_date, image_url, file_url, summary } = req.body;
 
   if (type !== undefined) {
-    const validTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
-    if (!validTypes.includes(type)) {
-      res.status(400).json({ error: `유형은 ${validTypes.join(', ')}만 가능합니다.` });
+    if (!VALID_POST_TYPES.includes(type)) {
+      res.status(400).json({ error: `유형은 ${VALID_POST_TYPES.join(', ')}만 가능합니다.` });
       return;
     }
 
-    // notice, document 타입은 관리자 전용
-    if ((type === 'notice' || type === 'document') && req.orgRole !== 'admin') {
+    // press_release, notice, document 타입은 관리자 전용
+    if (ADMIN_ONLY_POST_TYPES.includes(type) && req.orgRole !== 'admin') {
       res.status(403).json({ error: '관리자만 작성할 수 있는 유형입니다.' });
       return;
     }

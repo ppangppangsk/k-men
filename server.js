@@ -451,6 +451,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 var router2 = Router2();
+var VALID_POST_TYPES = ["news", "event", "press_release", "notice", "document", "member_activity"];
+var ADMIN_ONLY_POST_TYPES = ["press_release", "notice", "document"];
 var uploadsRoot = process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), "..", "kmen-uploads") : path.join(process.cwd(), "uploads");
 var validPostTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
 function getUploadDir(postType) {
@@ -568,12 +570,11 @@ router2.post("/", authMiddleware, async (req, res) => {
     res.status(400).json({ error: "\uC81C\uBAA9, \uB0B4\uC6A9, \uC720\uD615\uC744 \uBAA8\uB450 \uC785\uB825\uD574\uC8FC\uC138\uC694." });
     return;
   }
-  const validTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
-  if (!validTypes.includes(type)) {
-    res.status(400).json({ error: `\uC720\uD615\uC740 ${validTypes.join(", ")}\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.` });
+  if (!VALID_POST_TYPES.includes(type)) {
+    res.status(400).json({ error: `\uC720\uD615\uC740 ${VALID_POST_TYPES.join(", ")}\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.` });
     return;
   }
-  if ((type === "notice" || type === "document") && req.orgRole !== "admin") {
+  if (ADMIN_ONLY_POST_TYPES.includes(type) && req.orgRole !== "admin") {
     res.status(403).json({ error: "\uAD00\uB9AC\uC790\uB9CC \uC791\uC131\uD560 \uC218 \uC788\uB294 \uC720\uD615\uC785\uB2C8\uB2E4." });
     return;
   }
@@ -595,12 +596,11 @@ router2.post("/", authMiddleware, async (req, res) => {
 router2.put("/:id", authMiddleware, async (req, res) => {
   const { title, content, type, event_date, image_url, file_url, summary } = req.body;
   if (type !== void 0) {
-    const validTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
-    if (!validTypes.includes(type)) {
-      res.status(400).json({ error: `\uC720\uD615\uC740 ${validTypes.join(", ")}\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.` });
+    if (!VALID_POST_TYPES.includes(type)) {
+      res.status(400).json({ error: `\uC720\uD615\uC740 ${VALID_POST_TYPES.join(", ")}\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.` });
       return;
     }
-    if ((type === "notice" || type === "document") && req.orgRole !== "admin") {
+    if (ADMIN_ONLY_POST_TYPES.includes(type) && req.orgRole !== "admin") {
       res.status(403).json({ error: "\uAD00\uB9AC\uC790\uB9CC \uC791\uC131\uD560 \uC218 \uC788\uB294 \uC720\uD615\uC785\uB2C8\uB2E4." });
       return;
     }
