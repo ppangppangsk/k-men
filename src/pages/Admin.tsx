@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import {
   Check, X, Trash2, Users, FileText, LogOut, Shield, Image, Upload,
   Film, FileDown, Newspaper, Pencil, Plus, HelpCircle, MessageSquare,
-  ChevronUp, ChevronDown, Bell, BookText,
+  ChevronUp, ChevronDown, Bell, BookText, Building2,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import RichTextEditor from '../components/ui/RichTextEditor';
@@ -12,7 +12,7 @@ import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 import type { Organization, Post, Media, FAQ, QnA } from '../types';
 
-type Tab = 'orgs' | 'posts' | 'press' | 'notice' | 'document' | 'media' | 'faq' | 'qna';
+type Tab = 'orgs' | 'posts' | 'member' | 'press' | 'notice' | 'document' | 'media' | 'faq' | 'qna';
 
 const categoryLabels: Record<string, string> = {
   photo: '사진',
@@ -35,7 +35,7 @@ function PostForm({
   onSave,
   onCancel,
 }: {
-  postType: 'news' | 'event' | 'press_release' | 'notice' | 'document';
+  postType: 'news' | 'event' | 'press_release' | 'notice' | 'document' | 'member_activity';
   editingPost: Post | null;
   onSave: (post: Post) => void;
   onCancel: () => void;
@@ -53,7 +53,7 @@ function PostForm({
   const fileAttachRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const fixedTypes = ['press_release', 'notice', 'document'] as const;
+  const fixedTypes = ['press_release', 'notice', 'document', 'member_activity'] as const;
   const actualType = (fixedTypes as readonly string[]).includes(postType) ? postType : selectedType;
 
   const handleImageUpload = useCallback(async (file: File): Promise<string> => {
@@ -349,6 +349,9 @@ export default function Admin() {
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [showPostForm, setShowPostForm] = useState(false);
 
+  const [editingMember, setEditingMember] = useState<Post | null>(null);
+  const [showMemberForm, setShowMemberForm] = useState(false);
+
   // Press editing
   const [editingPress, setEditingPress] = useState<Post | null>(null);
   const [showPressForm, setShowPressForm] = useState(false);
@@ -447,6 +450,20 @@ export default function Admin() {
       setPosts((prev) => [saved, ...prev]);
     }
     setShowPostForm(false);
+  };
+
+  /* --- Member activity handlers --- */
+  // 회원 기관이 작성한 글이므로 목록/삭제는 posts 상태와 handleDeletePost(관리자 전용
+  // DELETE /admin/posts/:id)를 그대로 쓴다. DELETE /posts/:id 는 작성자 본인만 허용하므로
+  // 보도자료·공지사항 탭처럼 api.deletePost 를 쓰면 관리자가 삭제할 수 없다.
+  const handleMemberSave = (saved: Post) => {
+    if (editingMember) {
+      setPosts((prev) => prev.map((p) => (p.id === saved.id ? saved : p)));
+      setEditingMember(null);
+    } else {
+      setPosts((prev) => [saved, ...prev]);
+    }
+    setShowMemberForm(false);
   };
 
   /* --- Press handlers --- */
@@ -617,6 +634,7 @@ export default function Admin() {
   if (!isAuthenticated || !isAdmin) return null;
 
   const pendingCount = orgs.filter((o) => !o.approved).length;
+  const memberActivities = posts.filter((p) => p.type === 'member_activity');
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes}B`;
@@ -662,7 +680,8 @@ export default function Admin() {
           <div className="flex gap-2 mb-8 border-b border-slate-200 overflow-x-auto">
             {([
               { key: 'orgs' as Tab, icon: Users, label: '단체 관리', badge: pendingCount > 0 ? pendingCount : null, badgeColor: 'bg-red-100 text-red-600' },
-              { key: 'posts' as Tab, icon: FileText, label: '소식/행사', badge: posts.filter((p) => !['press_release', 'notice', 'document'].includes(p.type)).length, badgeColor: 'bg-slate-100 text-slate-600' },
+              { key: 'posts' as Tab, icon: FileText, label: '소식/행사', badge: posts.filter((p) => ['news', 'event'].includes(p.type)).length, badgeColor: 'bg-slate-100 text-slate-600' },
+              { key: 'member' as Tab, icon: Building2, label: '회원 기관 활동', badge: memberActivities.length, badgeColor: 'bg-teal-100 text-teal-700' },
               { key: 'press' as Tab, icon: Newspaper, label: '보도자료', badge: pressReleases.length, badgeColor: 'bg-orange-100 text-kmen-orange' },
               { key: 'notice' as Tab, icon: Bell, label: '공지사항', badge: notices.length, badgeColor: 'bg-green-100 text-green-700' },
               { key: 'document' as Tab, icon: BookText, label: '문서 자료', badge: documentPosts.length, badgeColor: 'bg-slate-100 text-slate-600' },
@@ -675,10 +694,12 @@ export default function Admin() {
                 onClick={() => {
                   setTab(t.key);
                   setEditingPost(null);
+                  setEditingMember(null);
                   setEditingPress(null);
                   setEditingNotice(null);
                   setEditingDocument(null);
                   setShowPostForm(false);
+                  setShowMemberForm(false);
                   setShowPressForm(false);
                   setShowNoticeForm(false);
                   setShowDocumentForm(false);
@@ -776,11 +797,11 @@ export default function Admin() {
 
               {/* Post List */}
               <div className="space-y-3">
-                {posts.filter((p) => !['press_release', 'notice', 'document'].includes(p.type)).length === 0 ? (
+                {posts.filter((p) => ['news', 'event'].includes(p.type)).length === 0 ? (
                   <div className="text-center py-20 text-slate-400">게시글이 없습니다.</div>
                 ) : (
                   posts
-                    .filter((p) => !['press_release', 'notice', 'document'].includes(p.type))
+                    .filter((p) => ['news', 'event'].includes(p.type))
                     .map((post) => {
                       const badge = typeBadge(post.type);
                       return (
@@ -816,6 +837,68 @@ export default function Admin() {
                         </div>
                       );
                     })
+                )}
+              </div>
+            </div>
+          ) : tab === 'member' ? (
+            /* ===== Member Activity Tab (회원 기관 활동) ===== */
+            <div>
+              {/* Create/Edit Form */}
+              {(showMemberForm || editingMember) ? (
+                <PostForm
+                  key={editingMember?.id ?? 'new-member'}
+                  postType="member_activity"
+                  editingPost={editingMember}
+                  onSave={handleMemberSave}
+                  onCancel={() => { setEditingMember(null); setShowMemberForm(false); }}
+                />
+              ) : (
+                <button
+                  onClick={() => setShowMemberForm(true)}
+                  className="flex items-center gap-2 px-5 py-3 mb-6 bg-orange-50 text-kmen-orange rounded-xl text-sm font-medium hover:bg-orange-100 transition-colors w-full justify-center border-2 border-dashed border-kmen-orange/30"
+                >
+                  <Plus className="w-4 h-4" />
+                  새 회원 기관 활동 작성
+                </button>
+              )}
+
+              {/* Member Activity List */}
+              <div className="space-y-3">
+                {memberActivities.length === 0 ? (
+                  <div className="text-center py-20 text-slate-400">등록된 회원 기관 활동이 없습니다.</div>
+                ) : (
+                  memberActivities.map((post) => (
+                    <div key={post.id} className="flex justify-between items-start gap-4 p-5 bg-white rounded-xl border border-slate-200">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
+                            회원 기관 활동
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {new Date(post.created_at).toLocaleDateString('ko-KR')}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-slate-900 truncate">{post.title}</h3>
+                        <p className="text-sm text-slate-500 mt-0.5">작성: {post.org_name}</p>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button
+                          onClick={() => { setEditingMember(post); setShowMemberForm(false); }}
+                          className="p-2 text-slate-400 hover:text-kmen-orange transition-colors"
+                          title="수정"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                          title="삭제"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
             </div>
