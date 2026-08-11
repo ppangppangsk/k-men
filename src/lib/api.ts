@@ -50,7 +50,7 @@ export const api = {
     });
   },
 
-  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'event_date' | 'image_url'>> & { summary?: string; file_url?: string }) {
+  updatePost(id: number, data: Partial<Pick<Post, 'title' | 'content' | 'type' | 'event_date' | 'image_url'>> & { summary?: string; file_url?: string }) {
     return request<Post>(`/posts/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

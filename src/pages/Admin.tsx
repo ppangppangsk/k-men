@@ -73,6 +73,7 @@ function PostForm({
         saved = await api.updatePost(editingPost.id, {
           title,
           content,
+          type: actualType as Post['type'],
           image_url: imageUrl || undefined,
           event_date: actualType === 'event' ? eventDate || undefined : undefined,
           summary: postType === 'document' ? summary || undefined : undefined,

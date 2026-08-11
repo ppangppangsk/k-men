@@ -593,7 +593,18 @@ router2.post("/", authMiddleware, async (req, res) => {
   }
 });
 router2.put("/:id", authMiddleware, async (req, res) => {
-  const { title, content, event_date, image_url, file_url, summary } = req.body;
+  const { title, content, type, event_date, image_url, file_url, summary } = req.body;
+  if (type !== void 0) {
+    const validTypes = ["news", "event", "press_release", "notice", "document", "member_activity"];
+    if (!validTypes.includes(type)) {
+      res.status(400).json({ error: `\uC720\uD615\uC740 ${validTypes.join(", ")}\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.` });
+      return;
+    }
+    if ((type === "notice" || type === "document") && req.orgRole !== "admin") {
+      res.status(403).json({ error: "\uAD00\uB9AC\uC790\uB9CC \uC791\uC131\uD560 \uC218 \uC788\uB294 \uC720\uD615\uC785\uB2C8\uB2E4." });
+      return;
+    }
+  }
   try {
     const [existing] = await db_default.execute(
       "SELECT org_id FROM posts WHERE id = ?",
@@ -608,8 +619,8 @@ router2.put("/:id", authMiddleware, async (req, res) => {
       return;
     }
     await db_default.execute(
-      "UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?",
-      [title, content, summary !== void 0 ? summary : null, event_date || null, image_url || null, file_url !== void 0 ? file_url || null : null, req.params.id]
+      "UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), type = COALESCE(?, type), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?",
+      [title, content, type ?? null, summary !== void 0 ? summary : null, event_date || null, image_url || null, file_url !== void 0 ? file_url || null : null, req.params.id]
     );
     const [rows] = await db_default.execute(
       "SELECT * FROM posts WHERE id = ?",

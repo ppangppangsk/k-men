@@ -182,7 +182,21 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 
 // 게시글 수정 (본인 글만, admin은 모두 수정 가능)
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { title, content, event_date, image_url, file_url, summary } = req.body;
+  const { title, content, type, event_date, image_url, file_url, summary } = req.body;
+
+  if (type !== undefined) {
+    const validTypes = ['news', 'event', 'press_release', 'notice', 'document', 'member_activity'];
+    if (!validTypes.includes(type)) {
+      res.status(400).json({ error: `유형은 ${validTypes.join(', ')}만 가능합니다.` });
+      return;
+    }
+
+    // notice, document 타입은 관리자 전용
+    if ((type === 'notice' || type === 'document') && req.orgRole !== 'admin') {
+      res.status(403).json({ error: '관리자만 작성할 수 있는 유형입니다.' });
+      return;
+    }
+  }
 
   try {
     const [existing] = await pool.execute<RowDataPacket[]>(
@@ -201,8 +215,8 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
     }
 
     await pool.execute(
-      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?',
-      [title, content, summary !== undefined ? summary : null, event_date || null, image_url || null, file_url !== undefined ? (file_url || null) : null, req.params.id]
+      'UPDATE posts SET title = COALESCE(?, title), content = COALESCE(?, content), type = COALESCE(?, type), summary = ?, event_date = ?, image_url = ?, file_url = ? WHERE id = ?',
+      [title, content, type ?? null, summary !== undefined ? summary : null, event_date || null, image_url || null, file_url !== undefined ? (file_url || null) : null, req.params.id]
     );
 
     const [rows] = await pool.execute<RowDataPacket[]>(
